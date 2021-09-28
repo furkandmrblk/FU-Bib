@@ -13,7 +13,7 @@ export const gray80: string = '#F3F3F3';
 
 // Primary Colors
 
-export const purple100: string = '#5D5FEF'
+export const purple100: string = '#5D5FEF';
 export const purple80: string = '#7879F1';
 export const purple60: string = '#A5A6F6';
 
@@ -38,14 +38,14 @@ export default {
     text: black100,
     background: white,
     tint: tintColorLight,
-    tabIconDefault: '#ccc',
+    tabIconDefault: white,
     tabIconSelected: tintColorLight,
   },
   dark: {
     text: white,
     background: black100,
     tint: tintColorDark,
-    tabIconDefault: '#ccc',
+    tabIconDefault: white,
     tabIconSelected: tintColorDark,
   },
 };
