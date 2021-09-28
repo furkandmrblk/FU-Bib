@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import { Text, View } from './Themed';
-import { titleOne, titleWeight } from '../constants/Fonts';
-import { peach100 } from '../constants/Colors';
+import { Text, View } from '../Themed';
+import { titleOne, titleWeight } from '../../constants/Fonts';
+import { peach100 } from '../../constants/Colors';
 
 type LogoProps = {
     color?: string;
