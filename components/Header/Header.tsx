@@ -25,9 +25,10 @@ export const Header = (props: HeaderProps) => {
       alignItems: 'flex-end',
     },
     upperPattern: {
-      height: 23,
+      height: 25,
       width: 163,
       backgroundColor: props.upperColor || peach100,
+      borderTopLeftRadius: 5,
       borderBottomLeftRadius: 5,
     },
     lowerPattern: {

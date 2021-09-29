@@ -26,6 +26,10 @@ const Input = ({ ...props }: InputProps) => {
       borderTopRightRadius: props.dropDown ? 0 : 5,
       borderBottomLeftRadius: 5,
       borderTopLeftRadius: 5,
+      borderStyle: 'solid',
+      borderColor: black80,
+      borderWidth: props.dropDown ? 1 : 0,
+      borderRightWidth: 0,
 
       color: black80,
       fontSize: textTwo,

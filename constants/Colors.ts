@@ -8,7 +8,7 @@ export const white: string = '#fff';
 export const black100: string = '#000000';
 export const black80: string = '#2D2D2D';
 
-export const gray100: string = '#707070';
+export const gray100: string = '#E0E0E0';
 export const gray80: string = '#F3F3F3';
 
 // Primary Colors
@@ -37,14 +37,14 @@ export default {
   light: {
     text: black100,
     background: white,
-    tint: tintColorLight,
+    tint: peach100,
     tabIconDefault: white,
     tabIconSelected: tintColorLight,
   },
   dark: {
     text: white,
     background: black100,
-    tint: tintColorDark,
+    tint: black80,
     tabIconDefault: white,
     tabIconSelected: tintColorDark,
   },

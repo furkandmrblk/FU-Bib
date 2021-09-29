@@ -5,12 +5,14 @@ import { View } from '../Themed';
 export const UpperBody = ({ children }: { children: ReactNode }) => {
   const styles = StyleSheet.create({
     container: {
-      display: 'flex',
+      position: 'relative',
+      flex: 1,
       flexDirection: 'column',
       alignItems: 'flex-start',
       width: '100%',
       paddingHorizontal: 32,
-      paddingVertical: 32,
+      paddingTop: 18,
+      paddingBottom: 18,
     },
   });
 
