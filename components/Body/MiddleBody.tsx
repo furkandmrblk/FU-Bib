@@ -8,26 +8,27 @@ type MiddleBodyProps = {
   firstLayerColor?: string;
   secondLayerColor?: string;
   thirdLayerColor?: string;
+  children: ReactNode;
 };
 
-export const MiddleBody = (
-  { children }: { children: ReactNode },
-  props: MiddleBodyProps
-) => {
+export const MiddleBody = ({
+  children,
+  firstLayerColor,
+  secondLayerColor,
+  thirdLayerColor,
+}: MiddleBodyProps) => {
   const styles = StyleSheet.create({
     firstLayer: {
       zIndex: -1,
       height: 15,
       width: '100%',
-      backgroundColor: props.firstLayerColor ? props.firstLayerColor : peach60,
+      backgroundColor: firstLayerColor ? firstLayerColor : peach60,
     },
     secondLayer: {
       zIndex: -1,
       height: 15,
       width: '100%',
-      backgroundColor: props.secondLayerColor
-        ? props.secondLayerColor
-        : peach80,
+      backgroundColor: secondLayerColor ? secondLayerColor : peach80,
     },
     thirdLayer: {
       zIndex: -1,
@@ -35,9 +36,9 @@ export const MiddleBody = (
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      height: Platform.OS == 'ios' ? '75.5%' : '70.5%',
+      height: Platform.OS == 'ios' ? '76.25%' : '71.5%',
       width: '100%',
-      backgroundColor: props.thirdLayerColor ? props.thirdLayerColor : peach100,
+      backgroundColor: thirdLayerColor ? thirdLayerColor : peach100,
 
       paddingVertical: 12,
       paddingHorizontal: 16,

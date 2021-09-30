@@ -4,19 +4,13 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { black80, gray100, gray80 } from '../../constants/Colors';
 import { textTwo, textWeight } from '../../constants/Fonts';
 import { setLibrary } from '../../utils/valueStore';
+import { ManropeText } from '../StyledText';
 import { Text, View } from '../Themed';
 
 type DropdownProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  items: {
-    id: string;
-    name: string;
-    address: string;
-    secondAddress?: string;
-    email: string;
-    secondEmail?: string;
-  }[];
+  items: any[] | undefined;
   width?: number;
 };
 
@@ -76,7 +70,7 @@ export const Dropdown = (props: DropdownProps) => {
             nestedScrollEnabled={true}
             style={styles.itemWrap}
           >
-            {props.items.map((item, index: number) => (
+            {props.items!.map((item, index: number) => (
               <Pressable
                 key={index}
                 style={{ width: '100%' }}
@@ -85,7 +79,7 @@ export const Dropdown = (props: DropdownProps) => {
                   props.setOpen(false);
                 }}
               >
-                <Text style={styles.item}>{item.name}</Text>
+                <ManropeText style={styles.item}>{item.name}</ManropeText>
               </Pressable>
             ))}
           </ScrollView>
