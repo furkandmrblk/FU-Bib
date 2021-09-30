@@ -5,6 +5,7 @@ type Library = {
   secondAddress?: string;
   email: string;
   secondEmail?: string;
+  floor?: string[];
 };
 
 export const libraries: Library[] = [
@@ -13,6 +14,7 @@ export const libraries: Library[] = [
     name: 'Bibliotheksbereich 1: Universitätsbibliothek',
     address: 'Garystr. 39 (Haupteingang), 14195 Berlin',
     email: 'auskunft@ub.fu-berlin.de',
+    floor: ['UG', 'EG'],
   },
   {
     id: '1.1',
@@ -116,4 +118,16 @@ export const setLibrary = (lib: Library) => {
 
 export const getLibrary = () => {
   return library;
+};
+
+let floor: string | undefined = undefined;
+
+export const setFloor = (val: string) => {
+  floor = val;
+
+  return floor;
+};
+
+export const getFloor = () => {
+  return floor;
 };
