@@ -8,11 +8,13 @@ type MiddleBodyProps = {
   firstLayerColor?: string;
   secondLayerColor?: string;
   thirdLayerColor?: string;
+  infoPage?: boolean;
   children: ReactNode;
 };
 
 export const MiddleBody = ({
   children,
+  infoPage,
   firstLayerColor,
   secondLayerColor,
   thirdLayerColor,
@@ -43,13 +45,27 @@ export const MiddleBody = ({
       paddingVertical: 12,
       paddingHorizontal: 16,
     },
+    infoLayer: {
+      zIndex: -1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+      height: Platform.OS == 'ios' ? '66.25%' : '61.5%',
+      width: '100%',
+      backgroundColor: thirdLayerColor ? thirdLayerColor : peach100,
+
+      paddingVertical: 36,
+      paddingHorizontal: 32,
+    },
   });
 
   return (
     <>
       <View style={styles.firstLayer} />
       <View style={styles.secondLayer} />
-      <View style={styles.thirdLayer}>{children}</View>
+      {!infoPage && <View style={styles.thirdLayer}>{children}</View>}
+      {infoPage && <View style={styles.infoLayer}>{children}</View>}
     </>
   );
 };
