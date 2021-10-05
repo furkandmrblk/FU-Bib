@@ -10,7 +10,7 @@ import {
   DarkTheme,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as React from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { ColorSchemeName } from 'react-native';
 
 import Colors from '../constants/Colors';
@@ -28,44 +28,66 @@ import TabThreeScreen from '../screens/TabThreeScreen';
 import TabFourScreen from '../screens/TabFourScreen';
 import { SignInScreen } from '../screens/SignInScreen';
 import { SignUpScreen } from '../screens/SignUpScreen';
-import { userIsAuthenticated } from '../utils/isAuthenticated';
+import { ApolloProvider } from '@apollo/client';
+import { createApolloClient } from '../utils/apollo';
+import * as SecureStore from 'expo-secure-store';
+import AuthReducer, { Context, initialState } from '../utils/reducer';
 
 export default function Navigation({
   colorScheme,
 }: {
   colorScheme: ColorSchemeName;
 }) {
+  const client = createApolloClient(initialState);
+  let localState: boolean | undefined = undefined;
+
+  if (typeof window !== 'undefined') {
+    const authPromise = SecureStore.getItemAsync('authenticated');
+    if (typeof authPromise == 'string') {
+      localState = JSON.parse(authPromise);
+    }
+  }
+
+  const [authenticated, dispatch] = useReducer(
+    AuthReducer,
+    localState || initialState
+  );
+
+  useEffect(() => {
+    SecureStore.setItemAsync('authenticated', JSON.stringify(authenticated));
+  }, [authenticated]);
+
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-    >
-      <RootNavigator />
-    </NavigationContainer>
+    <ApolloProvider client={client}>
+      <Context.Provider
+        value={{
+          authState: authenticated,
+          authDispatch: dispatch,
+        }}
+      >
+        <NavigationContainer
+          linking={LinkingConfiguration}
+          theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+        >
+          <RootNavigator />
+        </NavigationContainer>
+      </Context.Provider>
+    </ApolloProvider>
   );
 }
 
-const auth: Promise<boolean> = userIsAuthenticated();
-console.log(auth);
-
-// const auth: boolean = false;
-
-/**
- * A root stack navigator is often used for displaying modals on top of all other content.
- * https://reactnavigation.org/docs/modal
- */
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const authContext = useContext(Context);
+  const [auth, setAuth] = useState(false);
+
+  useEffect(() => {
+    setAuth(authContext!.authState);
+  });
+
   return (
     <Stack.Navigator>
-      {auth && (
-        <Stack.Screen
-          name="Root"
-          component={BottomTabNavigator}
-          options={{ headerShown: false }}
-        />
-      )}
       {!auth && (
         <Stack.Screen
           name="SignIn"
@@ -80,22 +102,17 @@ function RootNavigator() {
           options={{ headerShown: false }}
         />
       )}
-      {/* <Stack.Screen
-        name="NotFound"
-        component={NotFoundScreen}
-        options={{ title: 'Oops!' }}
-      /> */}
-      {/* <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group> */}
+      {auth && (
+        <Stack.Screen
+          name="Root"
+          component={BottomTabNavigator}
+          options={{ headerShown: false }}
+        />
+      )}
     </Stack.Navigator>
   );
 }
 
-/**
- * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
- * https://reactnavigation.org/docs/bottom-tab-navigator
- */
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
