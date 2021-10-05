@@ -34,7 +34,7 @@ const Button = ({
       backgroundColor: backgroundColor ? backgroundColor : white,
       borderRadius: 5,
       paddingHorizontal: 7,
-      paddingVertical: 12,
+      paddingVertical: 10,
     },
   });
 

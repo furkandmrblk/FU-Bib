@@ -33,7 +33,9 @@ const Input = ({ ...props }: InputProps) => {
 
       color: black80,
       fontSize: textTwo,
-      fontWeight: titleWeight,
+      fontWeight: textWeight,
+
+      marginBottom: 10,
     },
   });
 
