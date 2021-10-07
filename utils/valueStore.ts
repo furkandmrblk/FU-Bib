@@ -1,3 +1,5 @@
+import SecureStore from 'expo-secure-store';
+
 type Library = {
   id: string;
   name: string;
@@ -8,6 +10,7 @@ type Library = {
   floor?: string[];
 };
 
+// will delete soon (db has the data for libraries)
 export const libraries: Library[] = [
   {
     id: '1.0',
@@ -107,6 +110,8 @@ export const libraries: Library[] = [
     email: 'bibliothek@met.fu-berlin.de',
   },
 ];
+
+// Library Utilities
 
 let library: Library | undefined = undefined;
 
