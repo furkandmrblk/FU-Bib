@@ -1,16 +1,19 @@
 import {
   ApolloClient,
   ApolloLink,
-  Context,
   createHttpLink,
   from,
   InMemoryCache,
+  NextLink,
   NormalizedCacheObject,
+  Operation,
   split,
 } from '@apollo/client';
-import { getMainDefinition } from '@apollo/client/utilities';
+import { onError } from '@apollo/client/link/error';
+import { asyncMap, getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from './websocket';
 import { setContext } from '@apollo/client/link/context';
+import SecureStore from 'expo-secure-store';
 
 const wsLink =
   typeof window !== 'undefined'
@@ -39,18 +42,76 @@ const splitLink =
       )
     : httpLink;
 
-// const errorLink = onError(({ graphQLErrors, networkError }) => {
-//     if (graphQLErrors)
-//       graphQLErrors.map(({ message, locations, path }) =>
-//         console.log(
-//           `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-//         )
-//       );
-//     if (networkError) console.log(`[Network error]: ${networkError}`);
+const authLink = new ApolloLink((operation, forward) => {
+  return asyncMap(forward(operation), async (response) => {
+    const {
+      response: { headers },
+    } = operation.getContext();
+
+    if (headers) {
+      const token = await headers.get('session');
+
+      if (token) {
+        await SecureStore.setItemAsync('session', token);
+      }
+    }
+    setContext(async (_, { headers }) => {
+      const token = await SecureStore.getItemAsync('session');
+      console.log(token);
+
+      return {
+        headers: {
+          ...headers,
+          session: token ? token : '',
+        },
+      };
+    });
+
+    return response;
+  });
+});
+
+// const authLink = setContext(async (_, { headers }) => {
+//   const token = await SecureStore.getItemAsync('session');
+//   return {
+//     headers: {
+//       ...headers,
+//       session: token ? token : '',
+//     },
+//   };
+// });
+
+// const afterwareLink = new ApolloLink((operation, forward) => {
+//   return forward(operation).map(async (response) => {
+//     const context = operation.getContext();
+//     const {
+//       response: { headers },
+//     } = context;
+
+//     if (headers) {
+//       const token = headers.get('session');
+
+//       if (token) {
+//         SecureStore.setItemAsync('session', token);
+//       }
+//     }
+
+//     return response;
 //   });
+// });
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.map(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+  if (networkError) console.log(`[Network error]: ${networkError}`);
+});
 
 export function createApolloClient(initialState: NormalizedCacheObject) {
-  let link: ApolloLink = splitLink;
+  let link: ApolloLink = from([errorLink, authLink, splitLink]);
 
   return new ApolloClient({
     link: link,
