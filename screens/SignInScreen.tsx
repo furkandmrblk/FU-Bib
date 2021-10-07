@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { gql, useApolloClient, useMutation } from '@apollo/client';
 import { Platform, Pressable, StyleSheet } from 'react-native';
 import { MiddleBody } from '../components/Body/MiddleBody';
 import { UpperBody } from '../components/Body/UpperBody';
@@ -10,30 +11,44 @@ import { View } from '../components/Themed';
 import {
   black100,
   peach100,
-  peach60,
-  peach80,
-  purple100,
   white,
   whiteTransparent,
 } from '../constants/Colors';
-import {
-  subtitleThree,
-  subtitleTwo,
-  subtitleWeight,
-  textThree,
-  textWeight,
-  titleThree,
-} from '../constants/Fonts';
+import { subtitleThree, subtitleWeight, textThree } from '../constants/Fonts';
 import { Context } from '../utils/reducer';
 import { Formik } from 'formik';
 import Input from '../components/Input/Input';
-import Navigation from '../navigation';
 import { RootStackScreenProps } from '../types';
+import SecureStore from 'expo-secure-store';
+
+const signIn = gql`
+  mutation signIn($email: String!, $password: String!) {
+    signIn(input: { email: $email, password: $password }) {
+      __typename
+      ... on Error {
+        message
+      }
+      ... on MutationSignInSuccess {
+        data {
+          id
+          email
+        }
+      }
+    }
+  }
+`;
 
 export const SignInScreen = ({
   navigation,
 }: RootStackScreenProps<'SignIn'>) => {
   const authContext = useContext(Context);
+  const client = useApolloClient();
+
+  const [login, loginResult] = useMutation(signIn, {
+    async onCompleted() {
+      await client.resetStore();
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -52,7 +67,20 @@ export const SignInScreen = ({
       <MiddleBody infoPage={true}>
         <Formik
           initialValues={{ email: '', password: '' }}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={async (values) => {
+            try {
+              login({
+                variables: { email: values.email, password: values.password },
+              });
+
+              if (!loginResult.loading) {
+                console.log('data: ', loginResult.data);
+                // authContext?.authDispatch('login');
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          }}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => (
             <View style={styles.modal}>
@@ -60,25 +88,24 @@ export const SignInScreen = ({
                 Login
               </ManropeText>
               <Input
+                autoCapitalize="none"
+                autoCorrect={false}
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
                 value={values.email}
                 placeholder="Email"
               />
               <Input
+                autoCapitalize="none"
+                autoCorrect={false}
                 secureTextEntry={true}
                 onChangeText={handleChange('password')}
                 onBlur={handleBlur('password')}
                 value={values.password}
                 placeholder="Passwort"
               />
-              <Button
-                backgroundColor={peach100}
-                onPress={() => {
-                  handleSubmit;
-                  authContext!.authDispatch('login');
-                }}
-              >
+
+              <Button backgroundColor={peach100} onPress={handleSubmit}>
                 <ManropeText style={{ color: white }} bold={true}>
                   Login
                 </ManropeText>
