@@ -10,7 +10,13 @@ import {
   DarkTheme,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useContext, useEffect, useReducer, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
 import { ColorSchemeName } from 'react-native';
 
 import Colors from '../constants/Colors';
@@ -31,48 +37,24 @@ import { SignInScreen } from '../screens/SignInScreen';
 import { SignUpScreen } from '../screens/SignUpScreen';
 import { ApolloProvider } from '@apollo/client';
 import { createApolloClient } from '../utils/apollo';
-import * as SecureStore from 'expo-secure-store';
-import AuthReducer, { Context, initialState } from '../utils/reducer';
+import deviceStorage from '../utils/deviceStorage';
 
 export default function Navigation({
   colorScheme,
 }: {
   colorScheme: ColorSchemeName;
 }) {
+  let initialState: any = false;
   const client = createApolloClient(initialState);
-  let localState: boolean | undefined = undefined;
-
-  if (typeof window !== 'undefined') {
-    const authPromise = SecureStore.getItemAsync('authenticated');
-    if (typeof authPromise == 'string') {
-      localState = JSON.parse(authPromise);
-    }
-  }
-
-  const [authenticated, dispatch] = useReducer(
-    AuthReducer,
-    localState || initialState
-  );
-
-  useEffect(() => {
-    SecureStore.setItemAsync('authenticated', JSON.stringify(authenticated));
-  }, [authenticated]);
 
   return (
     <ApolloProvider client={client}>
-      <Context.Provider
-        value={{
-          authState: authenticated,
-          authDispatch: dispatch,
-        }}
+      <NavigationContainer
+        linking={LinkingConfiguration}
+        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
       >
-        <NavigationContainer
-          linking={LinkingConfiguration}
-          theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-        >
-          <RootNavigator />
-        </NavigationContainer>
-      </Context.Provider>
+        <RootNavigator />
+      </NavigationContainer>
     </ApolloProvider>
   );
 }
@@ -80,12 +62,21 @@ export default function Navigation({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const authContext = useContext(Context);
-  const [auth, setAuth] = useState(false);
+  const [auth, setAuth] = useState<boolean>(false);
 
-  useEffect(() => {
-    setAuth(authContext!.authState);
-  });
+  const isAuth = useCallback(async () => {
+    await deviceStorage
+      .get('authenticated')
+      .then((bool) => {
+        if (bool) {
+          setAuth(JSON.parse(bool));
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+  isAuth();
 
   return (
     <Stack.Navigator>
