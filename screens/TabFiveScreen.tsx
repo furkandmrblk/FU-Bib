@@ -2,19 +2,38 @@ import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { UpperBody } from '../components/Body/UpperBody';
 import { Header } from '../components/Header/Header';
+import { PatternLeft } from '../components/Patterns/PatternLeft';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import { black100 } from '../constants/Colors';
-import { subtitleThree, subtitleWeight } from '../constants/Fonts';
+import {
+  black100,
+  purple100,
+  purple60,
+  purple80,
+  white,
+} from '../constants/Colors';
+import {
+  subtitleThree,
+  subtitleTwo,
+  subtitleWeight,
+  textTwo,
+} from '../constants/Fonts';
 
-export default function TabFourScreen() {
+export default function TabFiveScreen() {
+  const email: string = 'ibrahimfud00@zedat.fu-berlin.de';
+
   return (
     <View style={styles.container}>
-      <Header />
+      <Header
+        upperColor={purple100}
+        lowerColor={purple80}
+        logoColor={purple100}
+      />
       <UpperBody>
         <ManropeText bold={true} style={styles.title}>
-          Neuigkeiten
+          {email}
         </ManropeText>
+        <PatternLeft />
       </UpperBody>
     </View>
   );
@@ -36,5 +55,21 @@ const styles = StyleSheet.create({
     color: black100,
     fontSize: subtitleThree,
     fontWeight: subtitleWeight,
+  },
+  label: {
+    color: white,
+    fontSize: subtitleThree,
+    marginBottom: 5,
+  },
+  text: {
+    color: white,
+    fontSize: textTwo,
+    marginBottom: 7.5,
+  },
+  statistics: {
+    color: white,
+    fontSize: textTwo,
+    marginLeft: 10,
+    marginBottom: 5,
   },
 });

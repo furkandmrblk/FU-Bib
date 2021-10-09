@@ -10,7 +10,9 @@ import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
 import {
   black100,
+  grayTransparent,
   peach100,
+  purple100,
   white,
   whiteTransparent,
 } from '../constants/Colors';
@@ -19,7 +21,6 @@ import { Context } from '../utils/reducer';
 import { Formik } from 'formik';
 import Input from '../components/Input/Input';
 import { RootStackScreenProps } from '../types';
-import SecureStore from 'expo-secure-store';
 
 const signIn = gql`
   mutation signIn($email: String!, $password: String!) {
@@ -54,93 +55,88 @@ export const SignInScreen = ({
     <View style={styles.container}>
       <Header />
       <UpperBody>
-        <ManropeText bold={true} style={styles.title}>
+        <ManropeText style={styles.title}>
           Melde dich an und reserviere dir einen Platz in eine der vielen
           Bibliotheken der Freien Universität Berlins.
         </ManropeText>
-        {/* <PatternLeft
-          upperColor={peach100}
-          middleColor={peach80}
-          lowerColor={peach60}
-        /> */}
+        <PatternLeft />
       </UpperBody>
-      <MiddleBody infoPage={true}>
-        <Formik
-          initialValues={{ email: '', password: '' }}
-          onSubmit={async (values) => {
-            try {
-              login({
-                variables: { email: values.email, password: values.password },
-              });
 
-              if (!loginResult.loading) {
-                console.log('data: ', loginResult.data);
-                // authContext?.authDispatch('login');
-              }
-            } catch (error) {
-              console.log(error);
+      <Formik
+        initialValues={{ email: '', password: '' }}
+        onSubmit={async (values) => {
+          try {
+            login({
+              variables: { email: values.email, password: values.password },
+            });
+
+            if (!loginResult.loading) {
+              authContext?.authDispatch('login');
             }
-          }}
-        >
-          {({ handleChange, handleBlur, handleSubmit, values }) => (
-            <View style={styles.modal}>
-              <ManropeText style={styles.title} bold={true}>
+          } catch (error) {
+            console.log(error);
+          }
+        }}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values }) => (
+          <View style={styles.modal}>
+            <ManropeText style={styles.modalTitle} bold={true}>
+              Login
+            </ManropeText>
+            <Input
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+              value={values.email}
+              placeholder="Email"
+            />
+            <Input
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+              onChangeText={handleChange('password')}
+              onBlur={handleBlur('password')}
+              value={values.password}
+              placeholder="Passwort"
+            />
+
+            <Button backgroundColor={purple100} onPress={() => handleSubmit()}>
+              <ManropeText style={{ color: white }} bold={true}>
                 Login
               </ManropeText>
-              <Input
-                autoCapitalize="none"
-                autoCorrect={false}
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                value={values.email}
-                placeholder="Email"
-              />
-              <Input
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry={true}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-                placeholder="Passwort"
-              />
-
-              <Button backgroundColor={peach100} onPress={handleSubmit}>
-                <ManropeText style={{ color: white }} bold={true}>
-                  Login
+            </Button>
+            <View
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                width: '100%',
+                backgroundColor: 'rgba(255,255,255,0)',
+                marginTop: 7.5,
+              }}
+            >
+              <ManropeText style={styles.text}>
+                Kein Account?{' '}
+                <ManropeText
+                  bold={true}
+                  style={{ textDecorationLine: 'underline' }}
+                  onPress={() => navigation.navigate('SignUp')}
+                >
+                  Hier registrieren.
                 </ManropeText>
-              </Button>
-              <View
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                  width: '100%',
-                  backgroundColor: 'rgba(255,255,255,0)',
-                  marginTop: 7.5,
-                }}
-              >
-                <ManropeText style={styles.text}>
-                  Kein Account?{' '}
-                  <ManropeText
-                    bold={true}
-                    style={{ textDecorationLine: 'underline' }}
-                    onPress={() => navigation.navigate('SignUp')}
-                  >
-                    Hier registrieren.
-                  </ManropeText>
-                </ManropeText>
-              </View>
+              </ManropeText>
             </View>
-          )}
-        </Formik>
-      </MiddleBody>
+          </View>
+        )}
+      </Formik>
+      <PatternLeft left={true} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
+    // position: 'relative',
     flex: 1,
     flexDirection: 'column',
     height: '100%',
@@ -148,27 +144,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingTop: Platform.OS == 'ios' ? 40 : 25,
-    overflow: 'visible',
+    // overflow: 'visible',
   },
   title: {
     color: black100,
     fontSize: subtitleThree,
     fontWeight: subtitleWeight,
-    marginBottom: 10,
   },
   modal: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '100%',
+    width: '85%',
     borderRadius: 5,
-    backgroundColor: whiteTransparent,
+    backgroundColor: grayTransparent,
     paddingHorizontal: 12,
-    paddingTop: 12,
-    paddingBottom: 8,
+    paddingTop: 24,
+    paddingBottom: 16,
+    borderStyle: 'solid',
+    borderColor: purple100,
+    borderWidth: 2,
+  },
+  modalTitle: {
+    color: black100,
+    fontSize: subtitleThree,
+    fontWeight: subtitleWeight,
+    marginBottom: 20,
   },
   input: {
-    marginBottom: 5,
+    marginBottom: 10,
   },
   text: {
     color: black100,

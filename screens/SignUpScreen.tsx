@@ -11,12 +11,15 @@ import Button from '../components/Button/Button';
 import { Context } from '../utils/reducer';
 import {
   black100,
+  grayTransparent,
   peach100,
+  purple100,
   white,
   whiteTransparent,
 } from '../constants/Colors';
 import { Platform, StyleSheet } from 'react-native';
 import { subtitleThree, subtitleWeight, textThree } from '../constants/Fonts';
+import { PatternLeft } from '../components/Patterns/PatternLeft';
 
 export const SignUpScreen = ({
   navigation,
@@ -27,81 +30,77 @@ export const SignUpScreen = ({
     <View style={styles.container}>
       <Header />
       <UpperBody>
-        <ManropeText bold={true} style={styles.title}>
+        <ManropeText style={styles.title}>
           Registriere dich und reserviere dir einen Platz in eine der vielen
           Bibliotheken der Freien Universität Berlins.
         </ManropeText>
-        {/* <PatternLeft
-          upperColor={peach100}
-          middleColor={peach80}
-          lowerColor={peach60}
-        /> */}
+        <PatternLeft />
       </UpperBody>
-      <MiddleBody infoPage={true}>
-        <Formik
-          initialValues={{ email: '', password: '', confirmPassword: '' }}
-          onSubmit={(values) => console.log(values)}
-        >
-          {({ handleChange, handleBlur, handleSubmit, values }) => (
-            <View style={styles.modal}>
-              <ManropeText style={styles.title} bold={true}>
-                Registration
+
+      <Formik
+        initialValues={{ email: '', password: '', confirmPassword: '' }}
+        onSubmit={(values) => console.log(values)}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values }) => (
+          <View style={styles.modal}>
+            <ManropeText style={styles.modalTitle} bold={true}>
+              Registration
+            </ManropeText>
+            <Input
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+              value={values.email}
+              placeholder="Email"
+            />
+            <Input
+              secureTextEntry={true}
+              onChangeText={handleChange('password')}
+              onBlur={handleBlur('password')}
+              value={values.password}
+              placeholder="Passwort"
+            />
+            <Input
+              secureTextEntry={true}
+              onChangeText={handleChange('confirmPassword')}
+              onBlur={handleBlur('confirmPassword')}
+              value={values.confirmPassword}
+              placeholder="Passwort wiederholen"
+            />
+            <Button
+              backgroundColor={purple100}
+              onPress={() => {
+                handleSubmit;
+                authContext!.authDispatch('login');
+              }}
+            >
+              <ManropeText style={{ color: white }} bold={true}>
+                Registrieren
               </ManropeText>
-              <Input
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                value={values.email}
-                placeholder="Email"
-              />
-              <Input
-                secureTextEntry={true}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-                placeholder="Passwort"
-              />
-              <Input
-                secureTextEntry={true}
-                onChangeText={handleChange('confirmPassword')}
-                onBlur={handleBlur('confirmPassword')}
-                value={values.confirmPassword}
-                placeholder="Passwort wiederholen"
-              />
-              <Button
-                backgroundColor={peach100}
-                onPress={() => {
-                  handleSubmit;
-                  authContext!.authDispatch('login');
-                }}
-              >
-                <ManropeText style={{ color: white }} bold={true}>
-                  Registrieren
+            </Button>
+            <View
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                width: '100%',
+                backgroundColor: 'rgba(255,255,255,0)',
+                marginTop: 7.5,
+              }}
+            >
+              <ManropeText style={styles.text}>
+                Account vorhanden?{' '}
+                <ManropeText
+                  bold={true}
+                  style={{ textDecorationLine: 'underline' }}
+                  onPress={() => navigation.navigate('SignIn')}
+                >
+                  Hier einloggen.
                 </ManropeText>
-              </Button>
-              <View
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                  width: '100%',
-                  backgroundColor: 'rgba(255,255,255,0)',
-                  marginTop: 7.5,
-                }}
-              >
-                <ManropeText style={styles.text}>
-                  Account vorhanden?{' '}
-                  <ManropeText
-                    bold={true}
-                    style={{ textDecorationLine: 'underline' }}
-                    onPress={() => navigation.navigate('SignIn')}
-                  >
-                    Hier einloggen.
-                  </ManropeText>
-                </ManropeText>
-              </View>
+              </ManropeText>
             </View>
-          )}
-        </Formik>
-      </MiddleBody>
+          </View>
+        )}
+      </Formik>
+      <PatternLeft left={true} />
     </View>
   );
 };
@@ -128,12 +127,21 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '100%',
+    width: '85%',
     borderRadius: 5,
-    backgroundColor: whiteTransparent,
+    backgroundColor: grayTransparent,
     paddingHorizontal: 12,
-    paddingTop: 12,
-    paddingBottom: 8,
+    paddingTop: 24,
+    paddingBottom: 16,
+    borderStyle: 'solid',
+    borderColor: purple100,
+    borderWidth: 2,
+  },
+  modalTitle: {
+    color: black100,
+    fontSize: subtitleThree,
+    fontWeight: subtitleWeight,
+    marginBottom: 20,
   },
   input: {
     marginBottom: 5,

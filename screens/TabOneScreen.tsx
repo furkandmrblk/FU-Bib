@@ -20,14 +20,12 @@ import {
   emerald100,
   gray80,
   peach100,
+  purple100,
   white,
 } from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Dropdown } from '../components/Dropdown/Dropdown';
 import { getLibrary, libraries } from '../utils/valueStore';
-import { MiddleBody } from '../components/Body/MiddleBody';
-import LibIcon from '../utils/LibIcon';
-import Button from '../components/Button/Button';
 
 export default function TabOneScreen({
   navigation,
@@ -40,7 +38,7 @@ export default function TabOneScreen({
       <Header />
       <UpperBody>
         <ManropeText style={styles.title}>
-          Wählen Sie eine Bibliothek aus
+          Wählen Sie eine Bibliothek aus und anschließend einen Tisch
         </ManropeText>
         <Pressable onPress={() => setOpenLibraries(!openLibraries)}>
           <View style={styles.inputWrap}>
@@ -52,16 +50,9 @@ export default function TabOneScreen({
               width={310}
               editable={false}
             />
-            {Platform.OS == 'android' && (
-              <View style={styles.inputIconAndroid}>
-                <Ionicons name="chevron-down" size={25} color={black80} />
-              </View>
-            )}
-            {Platform.OS == 'ios' && (
-              <View style={styles.inputIconIOS}>
-                <Ionicons name="chevron-down" size={25} color={black80} />
-              </View>
-            )}
+            <View style={styles.inputIcon}>
+              <Ionicons name="chevron-down" size={22} color={black80} />
+            </View>
           </View>
           <Dropdown
             open={openLibraries}
@@ -71,94 +62,6 @@ export default function TabOneScreen({
           />
         </Pressable>
       </UpperBody>
-      <MiddleBody>
-        {getLibrary() !== undefined ? (
-          <>
-            <ManropeText bold={true} style={styles.bodyTitle}>
-              {getLibrary()?.name}
-            </ManropeText>
-            <ManropeText style={styles.bodySubtitle}>
-              {getLibrary()?.address}
-            </ManropeText>
-            {getLibrary()?.secondAddress && (
-              <ManropeText style={styles.bodySubtitle}>
-                {getLibrary()?.secondAddress}
-              </ManropeText>
-            )}
-            {getLibrary()?.id == '1.0' && <Lib10 />}
-            {getLibrary() !== undefined ? (
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  width: '100%',
-                  justifyContent: 'space-between',
-                  borderRadius: 5,
-                  backgroundColor: peach100,
-                }}
-              >
-                <Pressable
-                  style={{ borderRadius: 5, overflow: 'hidden' }}
-                  onPress={() => setOpenLibraries(!openLibraries)}
-                >
-                  <View style={styles.inputWrap}>
-                    <Input
-                      value="EG"
-                      pointerEvents="none"
-                      dropDown={true}
-                      width={50}
-                      editable={false}
-                    />
-                    {Platform.OS == 'android' && (
-                      <View style={styles.inputIconAndroid}>
-                        <Ionicons
-                          name="chevron-down"
-                          size={25}
-                          color={black80}
-                        />
-                      </View>
-                    )}
-                    {Platform.OS == 'ios' && (
-                      <View style={styles.inputIconIOS}>
-                        <Ionicons
-                          name="chevron-down"
-                          size={25}
-                          color={black80}
-                        />
-                      </View>
-                    )}
-                  </View>
-                  <Dropdown
-                    open={openFloor}
-                    setOpen={setOpenFloor}
-                    width={50}
-                    items={getLibrary()?.floor}
-                  />
-                </Pressable>
-                <Button width={150} backgroundColor={emerald100}>
-                  <ManropeText
-                    bold={true}
-                    style={{
-                      color: white,
-                      fontSize: textTwo,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Reservieren
-                  </ManropeText>
-                </Button>
-              </View>
-            ) : null}
-          </>
-        ) : (
-          <>
-            <ManropeText bold={true} style={styles.bodyTitle}>
-              Bitte wählen Sie eine Bibliothek aus 📖
-            </ManropeText>
-            <LibIcon height={350} width={200} />
-          </>
-        )}
-      </MiddleBody>
     </View>
   );
 }
@@ -184,9 +87,9 @@ const styles = StyleSheet.create({
   inputWrap: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
-  inputIconAndroid: {
+  inputIcon: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -194,26 +97,13 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
     borderStyle: 'solid',
-    borderColor: black80,
-    borderWidth: 1,
+    borderColor: purple100,
+    borderWidth: 2,
     borderLeftWidth: 0,
     paddingHorizontal: 5,
-    paddingVertical: 12.4,
+    paddingVertical: Platform.OS == 'ios' ? 8.7 : 13.9,
   },
-  inputIconIOS: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: gray80,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    borderStyle: 'solid',
-    borderColor: black80,
-    borderWidth: 1,
-    borderLeftWidth: 0,
-    paddingHorizontal: 5,
-    paddingVertical: 7.2,
-  },
+
   bodyTitle: {
     color: white,
     fontSize: subtitleThree,
