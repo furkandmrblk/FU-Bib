@@ -4,12 +4,14 @@ const tintColorDark = '#fff';
 // Base Colors
 
 export const white: string = '#fff';
+export const whiteTransparent: string = 'rgba(255, 255, 255, 0.4)';
 
 export const black100: string = '#000000';
 export const black80: string = '#2D2D2D';
 
 export const gray100: string = '#E0E0E0';
-export const gray80: string = '#F3F3F3';
+export const gray80: string = '#FBFBFB';
+export const grayTransparent: string = 'rgba(227, 227, 227, 0.7)';
 
 // Primary Colors
 
@@ -30,8 +32,6 @@ export const emerald60: string = '#74D264';
 export const crimson100: string = '#F10C0C';
 export const crimson80: string = '#FF5050';
 export const crimson60: string = '#FF7A7A';
-
-export const coffee100: string = '#6D5454';
 
 export default {
   light: {
