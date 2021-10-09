@@ -16,7 +16,10 @@ import { ColorSchemeName } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
+// import TabTwoScreen from '../screens/TabTwoScreen';
+import TabThreeScreen from '../screens/TabThreeScreen';
+import TabFourScreen from '../screens/TabFourScreen';
+import TabFiveScreen from '../screens/TabFiveScreen';
 import {
   RootStackParamList,
   RootTabParamList,
@@ -24,8 +27,6 @@ import {
 } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { MaterialIcons } from '@expo/vector-icons';
-import TabThreeScreen from '../screens/TabThreeScreen';
-import TabFourScreen from '../screens/TabFourScreen';
 import { SignInScreen } from '../screens/SignInScreen';
 import { SignUpScreen } from '../screens/SignUpScreen';
 import { ApolloProvider } from '@apollo/client';
@@ -153,13 +154,13 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name="TabTwo"
-        component={TabTwoScreen}
+        component={TabThreeScreen}
         options={{
           title: 'Tab Two',
           headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="qr-code-2" size={32} color={color} />
+            <MaterialIcons name="book-online" size={32} color={color} />
           ),
         }}
       />
@@ -171,13 +172,25 @@ function BottomTabNavigator() {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="info-outline" size={32} color={color} />
+            <MaterialIcons name="qr-code-2" size={32} color={color} />
           ),
         }}
       />
       <BottomTab.Screen
         name="TabFour"
         component={TabFourScreen}
+        options={{
+          title: 'Tab Four',
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="info-outline" size={32} color={color} />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="TabFive"
+        component={TabFiveScreen}
         options={{
           title: 'Tab Four',
           headerShown: false,
