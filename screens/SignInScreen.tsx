@@ -20,6 +20,7 @@ import { Formik } from 'formik';
 import Input from '../components/Input/Input';
 import { RootStackScreenProps } from '../types';
 import deviceStorage from '../utils/deviceStorage';
+import { useAuth } from '../providers/Auth';
 
 const signIn = gql`
   mutation signIn($email: String!, $password: String!) {
@@ -48,16 +49,17 @@ export const SignInScreen = ({
   navigation,
 }: RootStackScreenProps<'SignIn'>) => {
   const client = useApolloClient();
+  const { setAuthenticated } = useAuth();
   const [error, setError] = useState<string | string[] | null>(null);
 
-  const [login, loginResult] = useMutation(signIn, {
-    async onCompleted(res) {
-      await client.resetStore();
+  const [login, _] = useMutation(signIn, {
+    onCompleted(res) {
+      client.resetStore();
       if (
         res.signIn.__typename !== 'ZodError' &&
         res.signIn.__typename !== 'BaseError'
       ) {
-        deviceStorage.set('authenticated', 'true');
+        setAuthenticated(true);
       } else if (res.signIn.__typename == 'ZodError') {
         setError(res.signIn.fieldErrors![0].message);
       } else {
