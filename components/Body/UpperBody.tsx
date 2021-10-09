@@ -5,8 +5,7 @@ import { View } from '../Themed';
 export const UpperBody = ({ children }: { children: ReactNode }) => {
   const styles = StyleSheet.create({
     container: {
-      position: 'relative',
-      flex: 1,
+      display: 'flex',
       flexDirection: 'column',
       alignItems: 'flex-start',
       width: '100%',
