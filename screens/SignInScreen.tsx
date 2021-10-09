@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { gql, useApolloClient, useMutation } from '@apollo/client';
 import { Platform, Pressable, StyleSheet } from 'react-native';
 import { MiddleBody } from '../components/Body/MiddleBody';
@@ -10,17 +10,16 @@ import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
 import {
   black100,
+  crimson100,
   grayTransparent,
-  peach100,
   purple100,
   white,
-  whiteTransparent,
 } from '../constants/Colors';
 import { subtitleThree, subtitleWeight, textThree } from '../constants/Fonts';
-import { Context } from '../utils/reducer';
 import { Formik } from 'formik';
 import Input from '../components/Input/Input';
 import { RootStackScreenProps } from '../types';
+import deviceStorage from '../utils/deviceStorage';
 
 const signIn = gql`
   mutation signIn($email: String!, $password: String!) {
@@ -28,6 +27,12 @@ const signIn = gql`
       __typename
       ... on Error {
         message
+      }
+      ... on ZodError {
+        fieldErrors {
+          message
+          path
+        }
       }
       ... on MutationSignInSuccess {
         data {
@@ -42,12 +47,22 @@ const signIn = gql`
 export const SignInScreen = ({
   navigation,
 }: RootStackScreenProps<'SignIn'>) => {
-  const authContext = useContext(Context);
   const client = useApolloClient();
+  const [error, setError] = useState<string | string[] | null>(null);
 
   const [login, loginResult] = useMutation(signIn, {
-    async onCompleted() {
+    async onCompleted(res) {
       await client.resetStore();
+      if (
+        res.signIn.__typename !== 'ZodError' &&
+        res.signIn.__typename !== 'BaseError'
+      ) {
+        deviceStorage.set('authenticated', 'true');
+      } else if (res.signIn.__typename == 'ZodError') {
+        setError(res.signIn.fieldErrors![0].message);
+      } else {
+        setError(res.signIn.message!);
+      }
     },
   });
 
@@ -69,10 +84,6 @@ export const SignInScreen = ({
             login({
               variables: { email: values.email, password: values.password },
             });
-
-            if (!loginResult.loading) {
-              authContext?.authDispatch('login');
-            }
           } catch (error) {
             console.log(error);
           }
@@ -100,6 +111,18 @@ export const SignInScreen = ({
               value={values.password}
               placeholder="Passwort"
             />
+            {error && (
+              <ManropeText
+                style={{
+                  textAlign: 'center',
+                  fontSize: textThree,
+                  color: crimson100,
+                  marginBottom: 10,
+                }}
+              >
+                {error}
+              </ManropeText>
+            )}
 
             <Button backgroundColor={purple100} onPress={() => handleSubmit()}>
               <ManropeText style={{ color: white }} bold={true}>
