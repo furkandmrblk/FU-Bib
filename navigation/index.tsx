@@ -38,6 +38,7 @@ import { SignUpScreen } from '../screens/SignUpScreen';
 import { ApolloProvider } from '@apollo/client';
 import { createApolloClient } from '../utils/apollo';
 import deviceStorage from '../utils/deviceStorage';
+import { useIsAuthenticated } from '../providers/Auth';
 
 export default function Navigation({
   colorScheme,
@@ -62,21 +63,22 @@ export default function Navigation({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const [auth, setAuth] = useState<boolean>(false);
+  const auth = useIsAuthenticated();
+  // const [auth, setAuth] = useState<boolean>(false);
 
-  const isAuth = useCallback(async () => {
-    await deviceStorage
-      .get('authenticated')
-      .then((bool) => {
-        if (bool) {
-          setAuth(JSON.parse(bool));
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-  isAuth();
+  // const isAuth = useCallback(async () => {
+  //   await deviceStorage
+  //     .get('authenticated')
+  //     .then((bool) => {
+  //       if (bool) {
+  //         setAuth(JSON.parse(bool));
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, []);
+  // isAuth();
 
   return (
     <Stack.Navigator>
