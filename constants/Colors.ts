@@ -37,7 +37,7 @@ export default {
   light: {
     text: black100,
     background: white,
-    tint: peach100,
+    tint: purple100,
     tabIconDefault: white,
     tabIconSelected: tintColorLight,
   },

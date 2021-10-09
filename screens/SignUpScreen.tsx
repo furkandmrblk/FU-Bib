@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { MiddleBody } from '../components/Body/MiddleBody';
 import { UpperBody } from '../components/Body/UpperBody';
 import { Header } from '../components/Header/Header';
@@ -8,7 +8,6 @@ import { RootStackScreenProps, RootTabScreenProps } from '../types';
 import { Formik } from 'formik';
 import Input from '../components/Input/Input';
 import Button from '../components/Button/Button';
-import { Context } from '../utils/reducer';
 import {
   black100,
   grayTransparent,
@@ -20,12 +19,11 @@ import {
 import { Platform, StyleSheet } from 'react-native';
 import { subtitleThree, subtitleWeight, textThree } from '../constants/Fonts';
 import { PatternLeft } from '../components/Patterns/PatternLeft';
+import deviceStorage from '../utils/deviceStorage';
 
 export const SignUpScreen = ({
   navigation,
 }: RootStackScreenProps<'SignUp'>) => {
-  const authContext = useContext(Context);
-
   return (
     <View style={styles.container}>
       <Header />
@@ -70,7 +68,7 @@ export const SignUpScreen = ({
               backgroundColor={purple100}
               onPress={() => {
                 handleSubmit;
-                authContext!.authDispatch('login');
+                deviceStorage.set('authenticated', 'true');
               }}
             >
               <ManropeText style={{ color: white }} bold={true}>

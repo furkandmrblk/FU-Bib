@@ -4,7 +4,7 @@ import { peach100, peach60, peach80 } from '../../constants/Colors';
 import { textOne, textThree, textTwo } from '../../constants/Fonts';
 import { View } from '../Themed';
 
-type MiddleBodyProps = {
+type BodyProps = {
   firstLayerColor?: string;
   secondLayerColor?: string;
   thirdLayerColor?: string;
@@ -18,7 +18,7 @@ export const MiddleBody = ({
   firstLayerColor,
   secondLayerColor,
   thirdLayerColor,
-}: MiddleBodyProps) => {
+}: BodyProps) => {
   const styles = StyleSheet.create({
     firstLayer: {
       zIndex: -1,

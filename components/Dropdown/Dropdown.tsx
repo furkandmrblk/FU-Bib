@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
+  black100,
   black80,
   gray100,
   gray80,
@@ -35,7 +36,7 @@ export const Dropdown = (props: DropdownProps) => {
       maxHeight: 290,
       width: props.width ? props.width : '100%',
 
-      backgroundColor: purple60,
+      backgroundColor: gray80,
       borderRadius: 5,
       borderStyle: 'solid',
       borderColor: purple100,
@@ -51,11 +52,11 @@ export const Dropdown = (props: DropdownProps) => {
       paddingRight: 12,
     },
     item: {
-      color: white,
+      color: black100,
       fontSize: textTwo,
       fontWeight: textWeight,
       width: '100%',
-      backgroundColor: purple80,
+      backgroundColor: gray100,
       borderRadius: 5,
       overflow: 'hidden',
 

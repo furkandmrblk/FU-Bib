@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { purple100, purple60, purple80 } from '../../constants/Colors';
 import { View } from '../Themed';
 
@@ -11,7 +11,7 @@ export const PatternLeft = (props: { left?: boolean }) => {
       backgroundColor: 'rgba(255,255,255, 0)',
       marginTop: 20,
       marginLeft: props.left ? 0 : -32,
-      marginRight: props.left ? -150 : 0,
+      marginRight: props.left ? (Platform.OS == 'ios' ? -150 : -175) : 0,
     },
     upperPattern: {
       height: 30,
