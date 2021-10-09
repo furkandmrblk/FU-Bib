@@ -3,41 +3,46 @@ import { StyleSheet } from 'react-native';
 import { purple100, purple60, purple80 } from '../../constants/Colors';
 import { View } from '../Themed';
 
-export const PatternLeft = (props: {
-  upperColor?: string;
-  middleColor?: string;
-  lowerColor?: string;
-}) => {
+export const PatternLeft = (props: { left?: boolean }) => {
   const styles = StyleSheet.create({
     container: {
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: 'rgba(255,255,255, 0)',
-      marginTop: 30,
-      marginLeft: -32,
+      marginTop: 20,
+      marginLeft: props.left ? 0 : -32,
+      marginRight: props.left ? -150 : 0,
     },
     upperPattern: {
       height: 30,
       width: 200,
-      backgroundColor: props.upperColor ? props.upperColor : purple100,
-      borderBottomRightRadius: 5,
-      borderTopRightRadius: 5,
+      backgroundColor: purple100,
+      borderBottomRightRadius: props.left ? 0 : 5,
+      borderTopRightRadius: props.left ? 0 : 5,
+      borderBottomLeftRadius: props.left ? 5 : 0,
+      borderTopLeftRadius: props.left ? 5 : 0,
       marginBottom: 5,
+      marginLeft: props.left ? 40 : 0,
     },
     middlePattern: {
       height: 30,
       width: 220,
-      backgroundColor: props.middleColor ? props.middleColor : purple80,
-      borderBottomRightRadius: 5,
-      borderTopRightRadius: 5,
+      backgroundColor: purple80,
+      borderBottomRightRadius: props.left ? 0 : 5,
+      borderTopRightRadius: props.left ? 0 : 5,
+      borderBottomLeftRadius: props.left ? 5 : 0,
+      borderTopLeftRadius: props.left ? 5 : 0,
       marginBottom: 5,
+      marginLeft: props.left ? 20 : 0,
     },
     lowerPattern: {
       height: 30,
       width: 240,
-      backgroundColor: props.lowerColor ? props.lowerColor : purple60,
-      borderBottomRightRadius: 5,
-      borderTopRightRadius: 5,
+      backgroundColor: purple60,
+      borderBottomRightRadius: props.left ? 0 : 5,
+      borderTopRightRadius: props.left ? 0 : 5,
+      borderBottomLeftRadius: props.left ? 5 : 0,
+      borderTopLeftRadius: props.left ? 5 : 0,
     },
   });
 

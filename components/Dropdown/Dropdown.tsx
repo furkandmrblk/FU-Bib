@@ -1,7 +1,15 @@
 import React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { black80, gray100, gray80 } from '../../constants/Colors';
+import {
+  black80,
+  gray100,
+  gray80,
+  purple100,
+  purple60,
+  purple80,
+  white,
+} from '../../constants/Colors';
 import { textTwo, textWeight } from '../../constants/Fonts';
 import { setLibrary } from '../../utils/valueStore';
 import { ManropeText } from '../StyledText';
@@ -27,28 +35,27 @@ export const Dropdown = (props: DropdownProps) => {
       maxHeight: 290,
       width: props.width ? props.width : '100%',
 
-      backgroundColor: gray80,
+      backgroundColor: purple60,
       borderRadius: 5,
       borderStyle: 'solid',
-      borderColor: black80,
-      borderWidth: 1,
+      borderColor: purple100,
+      borderWidth: 2,
 
       paddingHorizontal: Platform.OS == 'ios' ? 2 : 6,
       paddingVertical: 8,
-      // marginTop: Platform.OS == 'android' ? 60 : 50,
-      marginTop: 5,
+      // marginTop: Platform.OS == 'android' ? 10 : 0,
     },
     itemWrap: {
       width: '100%',
-      backgroundColor: gray80,
       paddingLeft: 6,
       paddingRight: 12,
     },
     item: {
+      color: white,
       fontSize: textTwo,
       fontWeight: textWeight,
       width: '100%',
-      backgroundColor: gray100,
+      backgroundColor: purple80,
       borderRadius: 5,
       overflow: 'hidden',
 

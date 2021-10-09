@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TextInput as DefaultInput } from 'react-native';
-import { black80, gray80 } from '../../constants/Colors';
+import { black80, gray80, purple100 } from '../../constants/Colors';
 import { textTwo, textWeight, titleWeight } from '../../constants/Fonts';
 
 type ThemeProps = {
@@ -27,8 +27,8 @@ const Input = ({ ...props }: InputProps) => {
       borderBottomLeftRadius: 5,
       borderTopLeftRadius: 5,
       borderStyle: 'solid',
-      borderColor: black80,
-      borderWidth: props.dropDown ? 1 : 0,
+      borderColor: purple100,
+      borderWidth: props.dropDown ? 2 : 0,
       borderRightWidth: 0,
 
       color: black80,
