@@ -1,8 +1,3 @@
-/**
- * If you are not familiar with React Navigation, refer to the "Fundamentals" guide:
- * https://reactnavigation.org/docs/getting-started
- *
- */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   NavigationContainer,
@@ -10,19 +5,13 @@ import {
   DarkTheme,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from 'react';
+import React from 'react';
 import { ColorSchemeName } from 'react-native';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
-// import TabTwoScreen from '../screens/TabTwoScreen';
+import TabTwoScreen from '../screens/TabTwoScreen';
 import TabThreeScreen from '../screens/TabThreeScreen';
 import TabFourScreen from '../screens/TabFourScreen';
 import TabFiveScreen from '../screens/TabFiveScreen';
@@ -37,7 +26,6 @@ import { SignInScreen } from '../screens/SignInScreen';
 import { SignUpScreen } from '../screens/SignUpScreen';
 import { ApolloProvider } from '@apollo/client';
 import { createApolloClient } from '../utils/apollo';
-import deviceStorage from '../utils/deviceStorage';
 import { useIsAuthenticated } from '../providers/Auth';
 
 export default function Navigation({
@@ -64,22 +52,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const auth = useIsAuthenticated();
-  // const [auth, setAuth] = useState<boolean>(false);
-
-  // const isAuth = useCallback(async () => {
-  //   await deviceStorage
-  //     .get('authenticated')
-  //     .then((bool) => {
-  //       if (bool) {
-  //         setAuth(JSON.parse(bool));
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }, []);
-  // isAuth();
-
   return (
     <Stack.Navigator>
       {!auth && (
@@ -129,25 +101,11 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="home" size={32} color={color} />
           ),
-          // headerRight: () => (
-          //   <Pressable
-          //     onPress={() => navigation.navigate('Modal')}
-          //     style={({ pressed }) => ({
-          //       opacity: pressed ? 0.5 : 1,
-          //     })}>
-          //     <FontAwesome
-          //       name="info-circle"
-          //       size={25}
-          //       color={Colors[colorScheme].text}
-          //       style={{ marginRight: 15 }}
-          //     />
-          //   </Pressable>
-          // ),
         })}
       />
       <BottomTab.Screen
         name="TabTwo"
-        component={TabThreeScreen}
+        component={TabTwoScreen}
         options={{
           title: 'Tab Two',
           headerShown: false,
