@@ -1,29 +1,23 @@
 import React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  black100,
-  black80,
-  gray100,
-  gray80,
-  purple100,
-  purple60,
-  purple80,
-  white,
-} from '../../constants/Colors';
-import { textTwo, textWeight } from '../../constants/Fonts';
+import { useNavigation } from '@react-navigation/core';
+import { black100, gray100, gray80, purple100 } from '../../constants/Colors';
+import { textTwo } from '../../constants/Fonts';
 import { setLibrary } from '../../utils/valueStore';
 import { ManropeText } from '../StyledText';
-import { Text, View } from '../Themed';
+import { View } from '../Themed';
 
 type DropdownProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   items: any[] | undefined;
   width?: number;
+  chooseLibrary?: boolean;
 };
 
 export const Dropdown = (props: DropdownProps) => {
+  const navigation = useNavigation();
+
   const styles = StyleSheet.create({
     container: {
       zIndex: 1000,
@@ -54,7 +48,6 @@ export const Dropdown = (props: DropdownProps) => {
     item: {
       color: black100,
       fontSize: textTwo,
-      fontWeight: textWeight,
       width: '100%',
       backgroundColor: gray100,
       borderRadius: 5,
@@ -83,8 +76,10 @@ export const Dropdown = (props: DropdownProps) => {
                 key={index}
                 style={{ width: '100%' }}
                 onPress={() => {
-                  setLibrary(item);
                   props.setOpen(false);
+                  setLibrary(item);
+                  props.chooseLibrary &&
+                    navigation.navigate('Root', { screen: 'TabTwo' });
                 }}
               >
                 <ManropeText style={styles.item}>{item.name}</ManropeText>
