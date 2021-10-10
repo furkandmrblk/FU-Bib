@@ -1,44 +1,36 @@
 import React, { useState } from 'react';
 import { Platform, Pressable, StyleSheet } from 'react-native';
 import { Header } from '../components/Header/Header';
-import { Text, View } from '../components/Themed';
+import { View } from '../components/Themed';
 import { ManropeText } from '../components/StyledText';
 import { UpperBody } from '../components/Body/UpperBody';
-import { Lib10 } from '../components/Libraries/Lib10';
-import {
-  subtitleThree,
-  subtitleWeight,
-  textOne,
-  textTwo,
-  textWeight,
-} from '../constants/Fonts';
+import { subtitleThree, textTwo } from '../constants/Fonts';
 import { RootTabScreenProps } from '../types';
 import Input from '../components/Input/Input';
 import {
   black100,
   black80,
-  emerald100,
   gray80,
-  peach100,
   purple100,
   white,
 } from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Dropdown } from '../components/Dropdown/Dropdown';
 import { getLibrary, libraries } from '../utils/valueStore';
+import ChooseLibIcon from '../utils/ChooseLibIcon';
+import LibIcon from '../utils/LibIcon';
 
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<'TabOne'>) {
   const [openLibraries, setOpenLibraries] = useState<boolean>(false);
-  const [openFloor, setOpenFloor] = useState<boolean>(false);
 
   return (
     <View style={styles.container}>
       <Header />
       <UpperBody>
         <ManropeText style={styles.title}>
-          Wählen Sie eine Bibliothek aus und anschließend einen Tisch
+          Wählen Sie sich eine Bibliothek aus:
         </ManropeText>
         <Pressable onPress={() => setOpenLibraries(!openLibraries)}>
           <View style={styles.inputWrap}>
@@ -59,9 +51,13 @@ export default function TabOneScreen({
             setOpen={setOpenLibraries}
             width={346}
             items={libraries}
+            chooseLibrary={true}
           />
         </Pressable>
       </UpperBody>
+      {!getLibrary() && (
+        <LibIcon dropdown={openLibraries} height={500} width={300} />
+      )}
     </View>
   );
 }
@@ -81,7 +77,6 @@ const styles = StyleSheet.create({
   title: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
     marginBottom: 10,
   },
   inputWrap: {
@@ -107,14 +102,12 @@ const styles = StyleSheet.create({
   bodyTitle: {
     color: white,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
     textAlign: 'center',
     marginBottom: getLibrary() !== undefined ? 2 : 50,
   },
   bodySubtitle: {
     color: white,
     fontSize: textTwo,
-    fontWeight: textWeight,
     textAlign: 'center',
     marginBottom: 5,
   },

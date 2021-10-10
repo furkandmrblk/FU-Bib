@@ -17,7 +17,7 @@ import {
   whiteTransparent,
 } from '../constants/Colors';
 import { Platform, StyleSheet } from 'react-native';
-import { subtitleThree, subtitleWeight, textThree } from '../constants/Fonts';
+import { subtitleThree, textThree } from '../constants/Fonts';
 import { PatternLeft } from '../components/Patterns/PatternLeft';
 import deviceStorage from '../utils/deviceStorage';
 
@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
   title: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
     marginBottom: 10,
   },
   modal: {
@@ -138,7 +137,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
     marginBottom: 20,
   },
   input: {

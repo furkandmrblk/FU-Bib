@@ -1,26 +1,11 @@
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { MiddleBody } from '../components/Body/MiddleBody';
 import { UpperBody } from '../components/Body/UpperBody';
 import { Header } from '../components/Header/Header';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import { MaterialIcons } from '@expo/vector-icons';
-import Button from '../components/Button/Button';
-import {
-  black100,
-  emerald100,
-  emerald60,
-  emerald80,
-  white,
-} from '../constants/Colors';
-import {
-  subtitleThree,
-  subtitleWeight,
-  textOne,
-  textTwo,
-  textWeight,
-} from '../constants/Fonts';
+import { black100, white } from '../constants/Colors';
+import { subtitleThree, textOne, textTwo } from '../constants/Fonts';
 import { getLibrary } from '../utils/valueStore';
 
 const hasQR: boolean = false;
@@ -28,11 +13,7 @@ const hasQR: boolean = false;
 export default function TabThreeScreen() {
   return (
     <View style={styles.container}>
-      <Header
-        upperColor={emerald100}
-        lowerColor={emerald80}
-        logoColor={emerald100}
-      />
+      <Header />
       <UpperBody>
         {hasQR ? (
           <ManropeText style={styles.title}>
@@ -80,28 +61,24 @@ const styles = StyleSheet.create({
   title: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
   },
   subtext: {
     fontSize: textOne,
-    fontWeight: textWeight,
   },
   bodyTitle: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
+
     textAlign: 'center',
   },
   bodySubtitle: {
     color: black100,
     fontSize: textTwo,
-    fontWeight: textWeight,
     textAlign: 'center',
   },
   bodyTableId: {
     color: black100,
     fontSize: textTwo,
-    fontWeight: textWeight,
     textAlign: 'center',
     marginTop: 10,
   },

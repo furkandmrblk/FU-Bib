@@ -5,7 +5,7 @@ import { Header } from '../components/Header/Header';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
 import { black100 } from '../constants/Colors';
-import { subtitleThree, subtitleWeight } from '../constants/Fonts';
+import { subtitleThree } from '../constants/Fonts';
 
 export default function TabFourScreen() {
   return (
@@ -35,6 +35,5 @@ const styles = StyleSheet.create({
   title: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
   },
 });

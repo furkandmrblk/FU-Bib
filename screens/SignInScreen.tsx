@@ -15,11 +15,10 @@ import {
   purple100,
   white,
 } from '../constants/Colors';
-import { subtitleThree, subtitleWeight, textThree } from '../constants/Fonts';
+import { subtitleThree, textThree } from '../constants/Fonts';
 import { Formik } from 'formik';
 import Input from '../components/Input/Input';
 import { RootStackScreenProps } from '../types';
-import deviceStorage from '../utils/deviceStorage';
 import { useAuth } from '../providers/Auth';
 
 const signIn = gql`
@@ -53,8 +52,8 @@ export const SignInScreen = ({
   const [error, setError] = useState<string | string[] | null>(null);
 
   const [login, _] = useMutation(signIn, {
-    onCompleted(res) {
-      client.resetStore();
+    async onCompleted(res) {
+      await client.resetStore();
       if (
         res.signIn.__typename !== 'ZodError' &&
         res.signIn.__typename !== 'BaseError'
@@ -174,7 +173,6 @@ const styles = StyleSheet.create({
   title: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
   },
   modal: {
     display: 'flex',
@@ -193,7 +191,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
     marginBottom: 20,
   },
   input: {

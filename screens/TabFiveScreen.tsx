@@ -5,30 +5,15 @@ import { Header } from '../components/Header/Header';
 import { PatternLeft } from '../components/Patterns/PatternLeft';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import {
-  black100,
-  purple100,
-  purple60,
-  purple80,
-  white,
-} from '../constants/Colors';
-import {
-  subtitleThree,
-  subtitleTwo,
-  subtitleWeight,
-  textTwo,
-} from '../constants/Fonts';
+import { black100, white } from '../constants/Colors';
+import { subtitleThree, textTwo } from '../constants/Fonts';
 
 export default function TabFiveScreen() {
   const email: string = 'ibrahimfud00@zedat.fu-berlin.de';
 
   return (
     <View style={styles.container}>
-      <Header
-        upperColor={purple100}
-        lowerColor={purple80}
-        logoColor={purple100}
-      />
+      <Header />
       <UpperBody>
         <ManropeText bold={true} style={styles.title}>
           {email}
@@ -54,7 +39,6 @@ const styles = StyleSheet.create({
   title: {
     color: black100,
     fontSize: subtitleThree,
-    fontWeight: subtitleWeight,
   },
   label: {
     color: white,
