@@ -11,9 +11,3 @@ export const subtitleThree: number = 16;
 export const textOne: number = 18;
 export const textTwo: number = 14;
 export const textThree: number = 12;
-
-// Font Weights
-
-export const titleWeight: '700' = '700';
-export const subtitleWeight: '600' = '600';
-export const textWeight: '400' = '400';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TextInput as DefaultInput } from 'react-native';
 import { black80, gray80, purple100 } from '../../constants/Colors';
-import { textTwo, textWeight, titleWeight } from '../../constants/Fonts';
+import { textTwo } from '../../constants/Fonts';
 
 type ThemeProps = {
   lightColor?: string;
@@ -33,7 +33,6 @@ const Input = ({ ...props }: InputProps) => {
 
       color: black80,
       fontSize: textTwo,
-      fontWeight: textWeight,
 
       marginBottom: 10,
     },

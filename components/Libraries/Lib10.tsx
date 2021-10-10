@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
-  coffee100,
+  black80,
   crimson100,
   emerald100,
-  gray80,
-  white,
+  grayTransparent,
+  purple100,
 } from '../../constants/Colors';
 
 export const Lib10 = () => {
@@ -18,11 +18,14 @@ export const Lib10 = () => {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      width: '100%',
+      width: '90%',
       height: '100%',
-      backgroundColor: 'rgba(255, 255, 255, 0.5)',
+      backgroundColor: grayTransparent,
       borderRadius: 5,
-      padding: 5,
+      borderColor: purple100,
+      borderStyle: 'solid',
+      borderWidth: 2,
+      padding: 10,
       marginBottom: 5,
     },
     row: {
@@ -49,14 +52,14 @@ export const Lib10 = () => {
     shelf: {
       height: 40,
       width: 10,
-      backgroundColor: coffee100,
+      backgroundColor: black80,
       borderRadius: 2,
       transform: horizontal ? [{ rotate: '90deg' }] : [{ rotate: '0deg' }],
     },
     shelfHorizontal: {
       height: 40,
       width: 10,
-      backgroundColor: coffee100,
+      backgroundColor: black80,
       borderRadius: 2,
       transform: horizontal ? [{ rotate: '0deg' }] : [{ rotate: '90deg' }],
     },

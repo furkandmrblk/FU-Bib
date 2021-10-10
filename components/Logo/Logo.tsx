@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../Themed';
-import { titleOne, titleWeight } from '../../constants/Fonts';
-import { peach100, purple100 } from '../../constants/Colors';
-
-type LogoProps = {
-  color?: string;
-};
+import { titleOne } from '../../constants/Fonts';
+import { purple100 } from '../../constants/Colors';
+import { ManropeText } from '../StyledText';
 
 export const Logo = () => {
   const styles = StyleSheet.create({
@@ -18,7 +15,6 @@ export const Logo = () => {
     },
     title: {
       fontSize: titleOne,
-      fontWeight: titleWeight,
       marginBottom: 1,
     },
     logoLine: {
@@ -31,7 +27,9 @@ export const Logo = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>FU Bib</Text>
+      <ManropeText bold={true} style={styles.title}>
+        FU Bib
+      </ManropeText>
       <View style={styles.logoLine} />
     </View>
   );
