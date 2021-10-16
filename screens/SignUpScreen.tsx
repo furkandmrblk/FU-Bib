@@ -1,29 +1,81 @@
-import React from 'react';
-import { MiddleBody } from '../components/Body/MiddleBody';
+import React, { useState } from 'react';
 import { UpperBody } from '../components/Body/UpperBody';
 import { Header } from '../components/Header/Header';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import { RootStackScreenProps, RootTabScreenProps } from '../types';
+import { RootStackScreenProps } from '../types';
 import { Formik } from 'formik';
+import { gql, useApolloClient, useMutation } from '@apollo/client';
 import Input from '../components/Input/Input';
 import Button from '../components/Button/Button';
 import {
   black100,
+  crimson100,
   grayTransparent,
-  peach100,
   purple100,
   white,
-  whiteTransparent,
 } from '../constants/Colors';
 import { Platform, StyleSheet } from 'react-native';
 import { subtitleThree, textThree } from '../constants/Fonts';
 import { PatternLeft } from '../components/Patterns/PatternLeft';
-import deviceStorage from '../utils/deviceStorage';
+import { useAuth } from '../providers/Auth';
+
+const signUp = gql`
+  mutation signUp(
+    $email: String!
+    $password: String!
+    $confirmPassword: String!
+  ) {
+    signUp(
+      input: {
+        email: $email
+        password: $password
+        confirmPassword: $confirmPassword
+      }
+    ) {
+      __typename
+      ... on Error {
+        message
+      }
+      ... on ZodError {
+        fieldErrors {
+          message
+          path
+        }
+      }
+      ... on MutationSignUpSuccess {
+        data {
+          id
+          email
+        }
+      }
+    }
+  }
+`;
 
 export const SignUpScreen = ({
   navigation,
 }: RootStackScreenProps<'SignUp'>) => {
+  const client = useApolloClient();
+  const { setAuthenticated } = useAuth();
+  const [error, setError] = useState<string | string[] | null>(null);
+
+  const [register, _] = useMutation(signUp, {
+    async onCompleted(res) {
+      await client.resetStore();
+      if (
+        res.signUp.__typename !== 'ZodError' &&
+        res.signUp.__typename !== 'BaseError'
+      ) {
+        setAuthenticated(true);
+      } else if (res.signUp.__typename == 'ZodError') {
+        setError(res.signUp.fieldErrors![0].message);
+      } else {
+        setError(res.signUp.message!);
+      }
+    },
+  });
+
   return (
     <View style={styles.container}>
       <Header />
@@ -37,7 +89,19 @@ export const SignUpScreen = ({
 
       <Formik
         initialValues={{ email: '', password: '', confirmPassword: '' }}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={async (values) => {
+          try {
+            register({
+              variables: {
+                email: values.email,
+                password: values.password,
+                confirmPassword: values.confirmPassword,
+              },
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View style={styles.modal}>
@@ -45,12 +109,16 @@ export const SignUpScreen = ({
               Registration
             </ManropeText>
             <Input
+              autoCapitalize="none"
+              autoCorrect={false}
               onChangeText={handleChange('email')}
               onBlur={handleBlur('email')}
               value={values.email}
               placeholder="Email"
             />
             <Input
+              autoCapitalize="none"
+              autoCorrect={false}
               secureTextEntry={true}
               onChangeText={handleChange('password')}
               onBlur={handleBlur('password')}
@@ -58,17 +126,31 @@ export const SignUpScreen = ({
               placeholder="Passwort"
             />
             <Input
+              autoCapitalize="none"
+              autoCorrect={false}
               secureTextEntry={true}
               onChangeText={handleChange('confirmPassword')}
               onBlur={handleBlur('confirmPassword')}
               value={values.confirmPassword}
-              placeholder="Passwort wiederholen"
+              placeholder="Passwort bestätigen"
             />
+            {error && (
+              <ManropeText
+                style={{
+                  textAlign: 'center',
+                  fontSize: textThree,
+                  color: crimson100,
+                  marginBottom: 10,
+                }}
+              >
+                {error}
+              </ManropeText>
+            )}
+
             <Button
               backgroundColor={purple100}
               onPress={() => {
-                handleSubmit;
-                deviceStorage.set('authenticated', 'true');
+                handleSubmit();
               }}
             >
               <ManropeText style={{ color: white }} bold={true}>
