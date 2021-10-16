@@ -3,15 +3,13 @@ import { useIsFocused } from '@react-navigation/core';
 import { Platform, StyleSheet } from 'react-native';
 import { UpperBody } from '../components/Body/UpperBody';
 import { Header } from '../components/Header/Header';
-import { Lib10 } from '../components/Libraries/Lib10';
+import { Library } from '../components/Libraries/Library';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
 import { black100, gray80, purple100 } from '../constants/Colors';
 import { subtitleThree } from '../constants/Fonts';
 import { RootTabScreenProps } from '../types';
 import { getLibrary } from '../utils/valueStore';
-import LibIcon from '../assets/images/LibIcon';
-import ChooseLibIcon from '../assets/images/ChooseLibIcon';
 import ChooseLibIcon2 from '../assets/images/ChooseLibIcon2';
 
 export default function TabTwoScreen({
@@ -46,7 +44,7 @@ export default function TabTwoScreen({
           </ManropeText>
         )}
       </UpperBody>
-      {getLibrary()?.id === '1.0' && <Lib10 />}
+      {getLibrary() !== undefined && <Library library={getLibrary()} />}
       {!getLibrary() && <ChooseLibIcon2 height={500} width={250} />}
     </View>
   );

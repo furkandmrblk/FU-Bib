@@ -16,14 +16,29 @@ import {
 } from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Dropdown } from '../components/Dropdown/Dropdown';
-import { getLibrary, libraries } from '../utils/valueStore';
-import ChooseLibIcon from '../assets/images/ChooseLibIcon';
+import { getLibrary } from '../utils/valueStore';
 import LibIcon from '../assets/images/LibIcon';
+import { gql, useQuery } from '@apollo/client';
+import deviceStorage from '../providers/deviceStorage';
+
+const getLibraries = gql`
+  query getLibraries {
+    getLibraries {
+      id
+      section
+      name
+      adress
+      email
+      website
+    }
+  }
+`;
 
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<'TabOne'>) {
   const [openLibraries, setOpenLibraries] = useState<boolean>(false);
+  const libraryData = useQuery(getLibraries);
 
   return (
     <View style={styles.container}>
@@ -46,16 +61,18 @@ export default function TabOneScreen({
               <Ionicons name="chevron-down" size={22} color={black80} />
             </View>
           </View>
-          <Dropdown
-            open={openLibraries}
-            setOpen={setOpenLibraries}
-            width={346}
-            items={libraries}
-            chooseLibrary={true}
-          />
+          {!libraryData.loading && (
+            <Dropdown
+              open={openLibraries}
+              setOpen={setOpenLibraries}
+              width={346}
+              items={libraryData.data.getLibraries}
+              chooseLibrary={true}
+            />
+          )}
         </Pressable>
       </UpperBody>
-      {!getLibrary() && (
+      {!openLibraries && (
         <LibIcon dropdown={openLibraries} height={500} width={300} />
       )}
     </View>
