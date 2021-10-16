@@ -1,7 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { gql, useApolloClient, useMutation } from '@apollo/client';
-import { Platform, Pressable, StyleSheet } from 'react-native';
-import { MiddleBody } from '../components/Body/MiddleBody';
+import { Platform, StyleSheet } from 'react-native';
 import { UpperBody } from '../components/Body/UpperBody';
 import Button from '../components/Button/Button';
 import { Header } from '../components/Header/Header';
