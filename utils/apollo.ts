@@ -42,7 +42,7 @@ const splitLink =
       )
     : httpLink;
 
-const authLink = new ApolloLink((operation, forward) => {
+const preAuthLink = new ApolloLink((operation, forward) => {
   return asyncMap(forward(operation), async (response) => {
     const {
       response: { headers },
@@ -55,19 +55,19 @@ const authLink = new ApolloLink((operation, forward) => {
         await deviceStorage.set('session', token);
       }
     }
-    setContext(async (_, { headers }) => {
-      const token = await deviceStorage.get('session');
-
-      return {
-        headers: {
-          ...headers,
-          session: token ? token : '',
-        },
-      };
-    });
-
     return response;
   });
+});
+
+const authLink = setContext(async (_, { headers }) => {
+  const token = await deviceStorage.get('session');
+
+  return {
+    headers: {
+      ...headers,
+      session: token ? token : '',
+    },
+  };
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -81,7 +81,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 export function createApolloClient(initialState: NormalizedCacheObject) {
-  let link: ApolloLink = from([errorLink, authLink, splitLink]);
+  let link: ApolloLink = from([errorLink, preAuthLink, authLink, splitLink]);
 
   return new ApolloClient({
     link: link,
