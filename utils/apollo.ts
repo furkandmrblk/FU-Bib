@@ -13,7 +13,7 @@ import { onError } from '@apollo/client/link/error';
 import { asyncMap, getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from './websocket';
 import { setContext } from '@apollo/client/link/context';
-import * as SecureStore from 'expo-secure-store';
+import deviceStorage from '../providers/deviceStorage';
 
 const wsLink =
   typeof window !== 'undefined'
@@ -52,12 +52,11 @@ const authLink = new ApolloLink((operation, forward) => {
       const token = await headers.get('session');
 
       if (token) {
-        await SecureStore.setItemAsync('session', token);
+        await deviceStorage.set('session', token);
       }
     }
     setContext(async (_, { headers }) => {
-      const token = await SecureStore.getItemAsync('session');
-      console.log(token);
+      const token = await deviceStorage.get('session');
 
       return {
         headers: {

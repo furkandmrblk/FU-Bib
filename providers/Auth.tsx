@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import * as SecureStorage from 'expo-secure-store';
+import deviceStorage from './deviceStorage';
 type AuthContext = {
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -28,16 +28,16 @@ export const AuthProvider = ({ children }: Props) => {
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const initializeAuth = async (): Promise<void> => {
-    console.log(await SecureStorage.getItemAsync('session'));
+    // console.log(await SecureStorage.getItemAsync('session'));
     const res = await fetch('http://localhost:4000/api/checkAuth', {
       credentials: 'include',
       method: 'GET',
       //@ts-ignore
       headers: {
-        session: await SecureStorage.getItemAsync('session'),
+        session: await deviceStorage.get('session'),
       },
     });
-    console.log(res.status);
+    // console.log(res.status);
 
     setAuthenticated(res.status === 200);
     setLoading(false);
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: Props) => {
 export function useAuth(): AuthContext {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used withing an AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }
