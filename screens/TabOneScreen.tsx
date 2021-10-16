@@ -17,8 +17,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Dropdown } from '../components/Dropdown/Dropdown';
 import { getLibrary, libraries } from '../utils/valueStore';
-import ChooseLibIcon from '../utils/ChooseLibIcon';
-import LibIcon from '../utils/LibIcon';
+import ChooseLibIcon from '../assets/images/ChooseLibIcon';
+import LibIcon from '../assets/images/LibIcon';
 
 export default function TabOneScreen({
   navigation,

@@ -10,9 +10,9 @@ import { black100, gray80, purple100 } from '../constants/Colors';
 import { subtitleThree } from '../constants/Fonts';
 import { RootTabScreenProps } from '../types';
 import { getLibrary } from '../utils/valueStore';
-import LibIcon from '../utils/LibIcon';
-import ChooseLibIcon from '../utils/ChooseLibIcon';
-import ChooseLibIcon2 from '../utils/ChooseLibIcon2';
+import LibIcon from '../assets/images/LibIcon';
+import ChooseLibIcon from '../assets/images/ChooseLibIcon';
+import ChooseLibIcon2 from '../assets/images/ChooseLibIcon2';
 
 export default function TabTwoScreen({
   navigation,
