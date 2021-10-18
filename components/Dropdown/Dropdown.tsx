@@ -11,7 +11,7 @@ type DropdownProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   items: LibraryProps[] | undefined;
-  width?: number;
+  width?: number | string;
   chooseLibrary?: boolean;
 };
 
@@ -22,13 +22,13 @@ export const Dropdown = (props: DropdownProps) => {
     container: {
       zIndex: 1000,
       position: 'relative',
-      flex: 1,
+      display: 'flex',
       flexDirection: 'column',
       alignItems: 'flex-start',
 
       minHeight: 290,
       maxHeight: 290,
-      width: props.width ? props.width : '100%',
+      maxWidth: props.width ? props.width : '100%',
 
       backgroundColor: gray80,
       borderRadius: 5,
@@ -71,20 +71,23 @@ export const Dropdown = (props: DropdownProps) => {
             nestedScrollEnabled={true}
             style={styles.itemWrap}
           >
-            {props.items!.map((item, index: number) => (
-              <Pressable
-                key={index}
-                style={{ width: '100%' }}
-                onPress={() => {
-                  props.setOpen(false);
-                  setLibrary(item);
-                  props.chooseLibrary &&
-                    navigation.navigate('Root', { screen: 'TabTwo' });
-                }}
-              >
-                <ManropeText style={styles.item}>{item.name}</ManropeText>
-              </Pressable>
-            ))}
+            {props
+              .items!.slice()
+              .sort((a, b) => (a.section as any) - b.section)
+              .map((item, index: number) => (
+                <Pressable
+                  key={index}
+                  style={{ width: '100%' }}
+                  onPress={() => {
+                    props.setOpen(false);
+                    setLibrary(item);
+                    props.chooseLibrary &&
+                      navigation.navigate('Root', { screen: 'TabTwo' });
+                  }}
+                >
+                  <ManropeText style={styles.item}>{item.name}</ManropeText>
+                </Pressable>
+              ))}
           </ScrollView>
         </View>
       ) : null}

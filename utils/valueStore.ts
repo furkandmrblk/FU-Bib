@@ -6,6 +6,16 @@ export type LibraryProps = {
   email: string;
   floor?: string[];
   website?: string;
+  table?: {
+    id: string;
+    identifier: string;
+    order: number;
+    libraryName: string;
+    floor: string;
+    booked: boolean;
+    userId: string;
+    time: number;
+  }[];
 };
 
 // Library Utilities

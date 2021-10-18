@@ -12,7 +12,7 @@ type ThemeProps = {
 };
 
 type ExtraProps = {
-  width?: number;
+  width?: number | string;
   backgroundColor?: string;
   children: ReactNode;
 };

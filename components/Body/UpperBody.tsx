@@ -9,9 +9,8 @@ export const UpperBody = ({ children }: { children: ReactNode }) => {
       flexDirection: 'column',
       alignItems: 'flex-start',
       width: '100%',
-      paddingHorizontal: 32,
-      paddingTop: 18,
-      paddingBottom: 18,
+
+      paddingVertical: 18,
     },
   });
 
