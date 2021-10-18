@@ -1,8 +1,18 @@
 import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { grayTransparent, purple100 } from '../../constants/Colors';
+import { ScrollView } from 'react-native-gesture-handler';
+import {
+  crimson100,
+  emerald80,
+  gray80,
+  grayTransparent,
+  purple100,
+} from '../../constants/Colors';
+import { textThree, textTwo } from '../../constants/Fonts';
+import { bodySubtitleStyle, bodyTitleStyle } from '../../screens/TabOneScreen';
 import { LibraryProps } from '../../utils/valueStore';
+import Button from '../Button/Button';
 import { ManropeText } from '../StyledText';
 
 const getLibrary = gql`
@@ -12,11 +22,13 @@ const getLibrary = gql`
       section
       name
       adress
+      floor
       email
       website
       table {
         id
         identifier
+        order
         floor
         booked
         time
@@ -33,31 +45,185 @@ export const Library = (library: LibraryProps | any) => {
       name: name,
     },
   });
-  if (libraryData.loading) return <ManropeText>Loading...</ManropeText>;
-  const currentLibrary = libraryData.data.getLibrary;
-  console.log('currLib:', currentLibrary);
+  if (libraryData.loading)
+    return (
+      <View
+        style={[
+          bodyContainerStyle.container,
+          { justifyContent: 'center', alignItems: 'center' },
+        ]}
+      >
+        <ManropeText bold={true}>Loading... Please wait a moment.</ManropeText>
+      </View>
+    );
+
+  const currentLibrary: LibraryProps = libraryData.data.getLibrary;
 
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      flexDirection: 'column',
+    tableContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    table: {
+      display: 'flex',
+      justifyContent: 'space-between',
       alignItems: 'center',
-      justifyContent: 'flex-start',
-      width: '90%',
-      height: '100%',
-      backgroundColor: grayTransparent,
+      height: 25,
+      width: 65,
+      backgroundColor: gray80,
       borderRadius: 5,
-      borderColor: purple100,
       borderStyle: 'solid',
       borderWidth: 2,
-      padding: 10,
+      fontSize: textThree,
       marginBottom: 5,
+      marginRight: 5,
     },
   });
 
   return (
-    <View style={styles.container}>
-      <ManropeText>{currentLibrary.name}</ManropeText>
+    <View style={bodyContainerStyle.container}>
+      <ScrollView
+        contentContainerStyle={{
+          width: '100%',
+          paddingLeft: 15,
+          paddingRight: 30,
+        }}
+      >
+        {/* ERDGESCHOSS */}
+        {currentLibrary.floor!.includes('EG') && (
+          <ManropeText bold={true} style={bodyTitleStyle.bodyTitle}>
+            Erdgeschoss :
+          </ManropeText>
+        )}
+        <View style={styles.tableContainer}>
+          {currentLibrary
+            .table!.slice()
+            .sort((a, b) => a.order - b.order)
+            .map(
+              (
+                table: {
+                  id: string;
+                  booked: boolean;
+                  floor: string;
+                  identifier: string;
+                },
+                index: number
+              ) => (
+                <View key={index}>
+                  {table.floor === 'EG' && (
+                    <View
+                      style={[
+                        styles.table,
+                        { borderColor: table.booked ? crimson100 : emerald80 },
+                      ]}
+                    >
+                      <ManropeText>{table.identifier}</ManropeText>
+                    </View>
+                  )}
+                </View>
+              )
+            )}
+        </View>
+        {/* 1. OBERGESCHOSS */}
+        {currentLibrary.floor!.includes('1.OG') && (
+          <ManropeText
+            bold={true}
+            style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+          >
+            1. Obergeschoss :
+          </ManropeText>
+        )}
+        <View style={styles.tableContainer}>
+          {currentLibrary
+            .table!.slice()
+            .sort((a, b) => a.order - b.order)
+            .map(
+              (
+                table: {
+                  id: string;
+                  booked: boolean;
+                  floor: string;
+                  identifier: string;
+                },
+                index: number
+              ) => (
+                <View key={index + 100}>
+                  {table.floor === '1.OG' && (
+                    <View
+                      key={index + 100}
+                      style={[
+                        styles.table,
+                        { borderColor: table.booked ? crimson100 : emerald80 },
+                      ]}
+                    >
+                      <ManropeText>{table.identifier}</ManropeText>
+                    </View>
+                  )}
+                </View>
+              )
+            )}
+        </View>
+        {/* 2. OBERGESCHOSS */}
+        {currentLibrary.floor!.includes('2.OG') && (
+          <ManropeText
+            bold={true}
+            style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+          >
+            2. Obergeschoss :
+          </ManropeText>
+        )}
+        <View style={styles.tableContainer}>
+          {currentLibrary
+            .table!.slice()
+            .sort((a, b) => a.order - b.order)
+            .map(
+              (
+                table: {
+                  id: string;
+                  booked: boolean;
+                  floor: string;
+                  identifier: string;
+                },
+                index: number
+              ) => (
+                <View key={index + 100}>
+                  {table.floor === '2.OG' && (
+                    <View
+                      key={index + 100}
+                      style={[
+                        styles.table,
+                        { borderColor: table.booked ? crimson100 : emerald80 },
+                      ]}
+                    >
+                      <ManropeText>{table.identifier}</ManropeText>
+                    </View>
+                  )}
+                </View>
+              )
+            )}
+        </View>
+      </ScrollView>
     </View>
   );
 };
+
+export const bodyContainerStyle = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    width: '100%',
+    maxHeight: 490,
+    backgroundColor: grayTransparent,
+    borderRadius: 5,
+    borderColor: purple100,
+    borderStyle: 'solid',
+    borderWidth: 2,
+    paddingVertical: 25,
+    marginBottom: 12.5,
+    overflow: 'hidden',
+  },
+});

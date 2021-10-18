@@ -11,7 +11,7 @@ export const Logo = () => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'flex-start',
-      paddingLeft: 32,
+      paddingLeft: 15,
     },
     title: {
       fontSize: titleOne,

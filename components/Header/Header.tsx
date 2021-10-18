@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { peach100, peach80, purple100, purple80 } from '../../constants/Colors';
 import { Logo } from '../Logo/Logo';
 import { View } from '../Themed';
@@ -12,6 +12,7 @@ export const Header = () => {
       alignItems: 'center',
       justifyContent: 'space-between',
       width: '100%',
+      paddingTop: Platform.OS == 'ios' ? 40 : 25,
     },
     patternWrapper: {
       display: 'flex',

@@ -4,7 +4,7 @@ import { Header } from '../components/Header/Header';
 import { View } from '../components/Themed';
 import { ManropeText } from '../components/StyledText';
 import { UpperBody } from '../components/Body/UpperBody';
-import { subtitleThree, textTwo } from '../constants/Fonts';
+import { subtitleThree, textOne, textThree, textTwo } from '../constants/Fonts';
 import { RootTabScreenProps } from '../types';
 import Input from '../components/Input/Input';
 import {
@@ -19,7 +19,6 @@ import { Dropdown } from '../components/Dropdown/Dropdown';
 import { getLibrary } from '../utils/valueStore';
 import LibIcon from '../assets/images/LibIcon';
 import { gql, useQuery } from '@apollo/client';
-import deviceStorage from '../providers/deviceStorage';
 
 const getLibraries = gql`
   query getLibraries {
@@ -41,65 +40,85 @@ export default function TabOneScreen({
   const libraryData = useQuery(getLibraries);
 
   return (
-    <View style={styles.container}>
+    <>
       <Header />
-      <UpperBody>
-        <ManropeText style={styles.title}>
-          Wählen Sie sich eine Bibliothek aus:
-        </ManropeText>
-        <Pressable onPress={() => setOpenLibraries(!openLibraries)}>
-          <View style={styles.inputWrap}>
-            <Input
-              value={getLibrary()?.name}
-              placeholder="Bibliothek auswählen"
-              pointerEvents="none"
-              dropDown={true}
-              width={310}
-              editable={false}
-            />
-            <View style={styles.inputIcon}>
-              <Ionicons name="chevron-down" size={22} color={black80} />
+      <View style={containerStyle.container}>
+        <UpperBody>
+          <ManropeText style={headerTitleStyle.title}>
+            Wählen Sie sich eine Bibliothek aus:
+          </ManropeText>
+          <Pressable onPress={() => setOpenLibraries(!openLibraries)}>
+            <View style={styles.inputWrap}>
+              <Input
+                value={getLibrary()?.name}
+                placeholder="Bibliothek auswählen"
+                pointerEvents="none"
+                dropDown={true}
+                editable={false}
+              />
+              <View style={styles.inputIcon}>
+                <Ionicons name="chevron-down" size={22} color={black80} />
+              </View>
             </View>
-          </View>
-          {!libraryData.loading && (
-            <Dropdown
-              open={openLibraries}
-              setOpen={setOpenLibraries}
-              width={346}
-              items={libraryData.data.getLibraries}
-              chooseLibrary={true}
-            />
-          )}
-        </Pressable>
-      </UpperBody>
-      {!openLibraries && (
-        <LibIcon dropdown={openLibraries} height={500} width={300} />
-      )}
-    </View>
+            {!libraryData.loading && (
+              <Dropdown
+                open={openLibraries}
+                setOpen={setOpenLibraries}
+                items={libraryData.data.getLibraries}
+                chooseLibrary={true}
+              />
+            )}
+          </Pressable>
+        </UpperBody>
+        {!openLibraries && (
+          <LibIcon dropdown={openLibraries} height={400} width={300} />
+        )}
+      </View>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
+export const containerStyle = StyleSheet.create({
   container: {
-    position: 'relative',
     flex: 1,
     flexDirection: 'column',
     height: '100%',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: Platform.OS == 'ios' ? 40 : 25,
-    overflow: 'visible',
+    paddingHorizontal: 20,
   },
+});
+
+export const headerTitleStyle = StyleSheet.create({
   title: {
     color: black100,
     fontSize: subtitleThree,
     marginBottom: 10,
   },
+});
+
+export const bodyTitleStyle = StyleSheet.create({
+  bodyTitle: {
+    fontSize: textTwo,
+    marginBottom: 10,
+  },
+});
+
+export const bodySubtitleStyle = StyleSheet.create({
+  bodySubtitle: {
+    fontSize: textThree,
+    marginBottom: 10,
+  },
+});
+
+const styles = StyleSheet.create({
   inputWrap: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
+    minWidth: '100%',
+    maxWidth: '100%',
   },
   inputIcon: {
     display: 'flex',
@@ -112,20 +131,7 @@ const styles = StyleSheet.create({
     borderColor: purple100,
     borderWidth: 2,
     borderLeftWidth: 0,
-    paddingHorizontal: 5,
+    paddingHorizontal: 7,
     paddingVertical: Platform.OS == 'ios' ? 8.7 : 13.9,
-  },
-
-  bodyTitle: {
-    color: white,
-    fontSize: subtitleThree,
-    textAlign: 'center',
-    marginBottom: getLibrary() !== undefined ? 2 : 50,
-  },
-  bodySubtitle: {
-    color: white,
-    fontSize: textTwo,
-    textAlign: 'center',
-    marginBottom: 5,
   },
 });
