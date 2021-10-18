@@ -19,6 +19,8 @@ import { Platform, StyleSheet } from 'react-native';
 import { subtitleThree, textThree } from '../constants/Fonts';
 import { PatternLeft } from '../components/Patterns/PatternLeft';
 import { useAuth } from '../providers/Auth';
+import { modalStyles } from './SignInScreen';
+import { containerStyle, headerTitleStyle } from './TabOneScreen';
 
 const signUp = gql`
   mutation signUp(
@@ -77,155 +79,112 @@ export const SignUpScreen = ({
   });
 
   return (
-    <View style={styles.container}>
+    <>
       <Header />
-      <UpperBody>
-        <ManropeText style={styles.title}>
-          Registriere dich und reserviere dir einen Platz in eine der vielen
-          Bibliotheken der Freien Universität Berlins.
-        </ManropeText>
-        <PatternLeft />
-      </UpperBody>
+      <View style={containerStyle.container}>
+        <UpperBody>
+          <ManropeText style={headerTitleStyle.title}>
+            Registriere dich und reserviere dir einen Platz in eine der vielen
+            Bibliotheken der Freien Universität Berlins.
+          </ManropeText>
+          <PatternLeft one={true} two={true} />
+        </UpperBody>
 
-      <Formik
-        initialValues={{ email: '', password: '', confirmPassword: '' }}
-        onSubmit={async (values) => {
-          try {
-            register({
-              variables: {
-                email: values.email,
-                password: values.password,
-                confirmPassword: values.confirmPassword,
-              },
-            });
-          } catch (error) {
-            console.log(error);
-          }
-        }}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values }) => (
-          <View style={styles.modal}>
-            <ManropeText style={styles.modalTitle} bold={true}>
-              Registration
-            </ManropeText>
-            <Input
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
-              value={values.email}
-              placeholder="Email"
-            />
-            <Input
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry={true}
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
-              value={values.password}
-              placeholder="Passwort"
-            />
-            <Input
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry={true}
-              onChangeText={handleChange('confirmPassword')}
-              onBlur={handleBlur('confirmPassword')}
-              value={values.confirmPassword}
-              placeholder="Passwort bestätigen"
-            />
-            {error && (
-              <ManropeText
-                style={{
-                  textAlign: 'center',
-                  fontSize: textThree,
-                  color: crimson100,
-                  marginBottom: 10,
+        <Formik
+          initialValues={{ email: '', password: '', confirmPassword: '' }}
+          onSubmit={async (values) => {
+            try {
+              register({
+                variables: {
+                  email: values.email,
+                  password: values.password,
+                  confirmPassword: values.confirmPassword,
+                },
+              });
+            } catch (error) {
+              console.log(error);
+            }
+          }}
+        >
+          {({ handleChange, handleBlur, handleSubmit, values }) => (
+            <View style={modalStyles.modal}>
+              <ManropeText style={modalStyles.modalTitle} bold={true}>
+                Registration
+              </ManropeText>
+              <Input
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+                value={values.email}
+                placeholder="Email"
+              />
+              <Input
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry={true}
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                value={values.password}
+                placeholder="Passwort"
+              />
+              <Input
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry={true}
+                onChangeText={handleChange('confirmPassword')}
+                onBlur={handleBlur('confirmPassword')}
+                value={values.confirmPassword}
+                placeholder="Passwort bestätigen"
+              />
+              {error && (
+                <ManropeText
+                  style={{
+                    textAlign: 'center',
+                    fontSize: textThree,
+                    color: crimson100,
+                    marginBottom: 10,
+                  }}
+                >
+                  {error}
+                </ManropeText>
+              )}
+
+              <Button
+                backgroundColor={purple100}
+                onPress={() => {
+                  handleSubmit();
                 }}
               >
-                {error}
-              </ManropeText>
-            )}
-
-            <Button
-              backgroundColor={purple100}
-              onPress={() => {
-                handleSubmit();
-              }}
-            >
-              <ManropeText style={{ color: white }} bold={true}>
-                Registrieren
-              </ManropeText>
-            </Button>
-            <View
-              style={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                width: '100%',
-                backgroundColor: 'rgba(255,255,255,0)',
-                marginTop: 7.5,
-              }}
-            >
-              <ManropeText style={styles.text}>
-                Account vorhanden?{' '}
-                <ManropeText
-                  bold={true}
-                  style={{ textDecorationLine: 'underline' }}
-                  onPress={() => navigation.navigate('SignIn')}
-                >
-                  Hier einloggen.
+                <ManropeText style={{ color: white }} bold={true}>
+                  Registrieren
                 </ManropeText>
-              </ManropeText>
+              </Button>
+              <View
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  width: '100%',
+                  backgroundColor: 'rgba(255,255,255,0)',
+                  marginTop: 7.5,
+                }}
+              >
+                <ManropeText style={modalStyles.text}>
+                  Account vorhanden?{' '}
+                  <ManropeText
+                    bold={true}
+                    style={{ textDecorationLine: 'underline' }}
+                    onPress={() => navigation.navigate('SignIn')}
+                  >
+                    Hier einloggen.
+                  </ManropeText>
+                </ManropeText>
+              </View>
             </View>
-          </View>
-        )}
-      </Formik>
-      <PatternLeft left={true} />
-    </View>
+          )}
+        </Formik>
+        <PatternLeft left={true} />
+      </View>
+    </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    flex: 1,
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: Platform.OS == 'ios' ? 40 : 25,
-    overflow: 'visible',
-  },
-  title: {
-    color: black100,
-    fontSize: subtitleThree,
-    marginBottom: 10,
-  },
-  modal: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '85%',
-    borderRadius: 5,
-    backgroundColor: grayTransparent,
-    paddingHorizontal: 12,
-    paddingTop: 24,
-    paddingBottom: 16,
-    borderStyle: 'solid',
-    borderColor: purple100,
-    borderWidth: 2,
-  },
-  modalTitle: {
-    color: black100,
-    fontSize: subtitleThree,
-    marginBottom: 20,
-  },
-  input: {
-    marginBottom: 5,
-  },
-  text: {
-    color: black100,
-    fontSize: textThree,
-  },
-});
