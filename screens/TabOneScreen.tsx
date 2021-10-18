@@ -45,7 +45,7 @@ export default function TabOneScreen({
       <View style={containerStyle.container}>
         <UpperBody>
           <ManropeText style={headerTitleStyle.title}>
-            Wählen Sie sich eine Bibliothek aus:
+            Wählen Sie eine Bibliothek aus:
           </ManropeText>
           <Pressable onPress={() => setOpenLibraries(!openLibraries)}>
             <View style={styles.inputWrap}>
@@ -56,9 +56,8 @@ export default function TabOneScreen({
                 dropDown={true}
                 editable={false}
               />
-              <View style={styles.inputIcon}>
-                <Ionicons name="chevron-down" size={22} color={black80} />
-              </View>
+
+              <Ionicons name="chevron-down" size={22} color={black80} />
             </View>
             {!libraryData.loading && (
               <Dropdown
@@ -114,24 +113,21 @@ export const bodySubtitleStyle = StyleSheet.create({
 
 const styles = StyleSheet.create({
   inputWrap: {
-    display: 'flex',
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: Platform.OS === 'ios' ? 50 : 55,
     minWidth: '100%',
     maxWidth: '100%',
-  },
-  inputIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: gray80,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
     borderStyle: 'solid',
     borderColor: purple100,
     borderWidth: 2,
-    borderLeftWidth: 0,
-    paddingHorizontal: 7,
-    paddingVertical: Platform.OS == 'ios' ? 8.7 : 13.9,
+    borderRadius: 5,
+
+    paddingLeft: 10,
+    paddingRight: 30,
+    paddingVertical: 10,
+    marginBottom: 5,
   },
 });
