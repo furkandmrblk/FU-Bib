@@ -1,85 +1,65 @@
-import * as React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { useIsFocused } from '@react-navigation/core';
+import React, { useEffect } from 'react';
 import { UpperBody } from '../components/Body/UpperBody';
+import Button from '../components/Button/Button';
 import { Header } from '../components/Header/Header';
+import { bodyContainerStyle } from '../components/Libraries/Library';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import { black100, white } from '../constants/Colors';
-import { subtitleThree, textOne, textTwo } from '../constants/Fonts';
+import { purple100, white } from '../constants/Colors';
 import { getLibrary } from '../utils/valueStore';
+import { containerStyle, headerTitleStyle } from './TabOneScreen';
+import QRCodeIcon from '../assets/images/QRCodeIcon';
 
 const hasQR: boolean = false;
 
 export default function TabThreeScreen() {
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    getLibrary;
+  }, [isFocused]);
+
   return (
-    <View style={styles.container}>
+    <>
       <Header />
-      <UpperBody>
+      <View style={containerStyle.container}>
+        <UpperBody>
+          {hasQR ? (
+            <ManropeText style={headerTitleStyle.title}>
+              Erfolgreich einen Platz im{' '}
+              <ManropeText bold={true} style={headerTitleStyle.title}>
+                {getLibrary()?.name}
+              </ManropeText>{' '}
+              gebucht!
+            </ManropeText>
+          ) : (
+            <ManropeText bold={false} style={headerTitleStyle.title}>
+              Reservieren Sie sich zunächst einen Tisch in einer Bibliothek.
+            </ManropeText>
+          )}
+        </UpperBody>
         {hasQR ? (
-          <ManropeText style={styles.title}>
-            Erfolgreich einen Platz im{' '}
-            <ManropeText bold={true} style={styles.title}>
-              {getLibrary()?.name}
-            </ManropeText>{' '}
-            gebucht!
-          </ManropeText>
+          <View
+            style={[
+              bodyContainerStyle.container,
+              {
+                alignItems: hasQR ? 'flex-start' : 'center',
+                justifyContent: hasQR ? 'flex-start' : 'center',
+              },
+            ]}
+          ></View>
         ) : (
-          <ManropeText bold={false} style={styles.title}>
-            Reservieren Sie sich zunächst einen Tisch in einer Bibliothek.
-          </ManropeText>
+          <QRCodeIcon height={500} width={300} />
         )}
-      </UpperBody>
-    </View>
+        {hasQR && (
+          <Button backgroundColor={purple100}>
+            <ManropeText bold={true} style={{ color: white }}>
+              Verlängern
+            </ManropeText>
+          </Button>
+        )}
+      </View>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    flex: 1,
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: Platform.OS == 'ios' ? 40 : 25,
-    overflow: 'visible',
-  },
-  innerContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    width: '100%',
-    height: '100%',
-    backgroundColor: white,
-    borderRadius: 5,
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    marginBottom: 5,
-  },
-  title: {
-    color: black100,
-    fontSize: subtitleThree,
-  },
-  subtext: {
-    fontSize: textOne,
-  },
-  bodyTitle: {
-    color: black100,
-    fontSize: subtitleThree,
-
-    textAlign: 'center',
-  },
-  bodySubtitle: {
-    color: black100,
-    fontSize: textTwo,
-    textAlign: 'center',
-  },
-  bodyTableId: {
-    color: black100,
-    fontSize: textTwo,
-    textAlign: 'center',
-    marginTop: 10,
-  },
-});
