@@ -10,7 +10,7 @@ type ThemeProps = {
 
 type ExtraProps = {
   dropDown?: boolean;
-  width?: number;
+  width?: number | string;
 };
 
 type InputProps = ThemeProps & DefaultInput['props'] & ExtraProps;
@@ -18,7 +18,8 @@ type InputProps = ThemeProps & DefaultInput['props'] & ExtraProps;
 const Input = ({ ...props }: InputProps) => {
   const styles = StyleSheet.create({
     container: {
-      width: props.width ? props.width : '100%',
+      minWidth: props.width ? props.width : 312,
+      maxWidth: props.width ? props.width : 312,
       backgroundColor: gray80,
       paddingHorizontal: 10,
       paddingVertical: 12,
