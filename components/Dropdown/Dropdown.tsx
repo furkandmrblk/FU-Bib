@@ -3,7 +3,8 @@ import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import { black100, gray100, gray80, purple100 } from '../../constants/Colors';
 import { textTwo } from '../../constants/Fonts';
-import { LibraryProps, setLibrary } from '../../utils/valueStore';
+import { setLibrary } from '../../utils/valueStore';
+import { LibraryProps } from '../../utils/types';
 import { ManropeText } from '../StyledText';
 import { View } from '../Themed';
 

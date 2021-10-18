@@ -3,7 +3,12 @@ import { Platform, StyleSheet } from 'react-native';
 import { purple100, purple60, purple80 } from '../../constants/Colors';
 import { View } from '../Themed';
 
-export const PatternLeft = (props: { left?: boolean }) => {
+export const PatternLeft = (props: {
+  left?: boolean;
+  one?: boolean;
+  two?: boolean;
+  three?: boolean;
+}) => {
   const styles = StyleSheet.create({
     container: {
       display: 'flex',
@@ -48,9 +53,16 @@ export const PatternLeft = (props: { left?: boolean }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.upperPattern} />
-      <View style={styles.middlePattern} />
-      <View style={styles.lowerPattern} />
+      {props.one && <View style={styles.upperPattern} />}
+      {props.two && <View style={styles.middlePattern} />}
+      {props.three && <View style={styles.lowerPattern} />}
+      {!props.one && !props.two && !props.three && (
+        <>
+          <View style={styles.upperPattern} />
+          <View style={styles.middlePattern} />
+          <View style={styles.lowerPattern} />
+        </>
+      )}
     </View>
   );
 };

@@ -18,24 +18,20 @@ type InputProps = ThemeProps & DefaultInput['props'] & ExtraProps;
 const Input = ({ ...props }: InputProps) => {
   const styles = StyleSheet.create({
     container: {
-      minWidth: props.width ? props.width : 312,
-      maxWidth: props.width ? props.width : 312,
+      minWidth: props.width ? props.width : '100%',
+      maxWidth: props.width ? props.width : '100%',
       backgroundColor: gray80,
-      paddingHorizontal: 10,
-      paddingVertical: 12,
+      paddingHorizontal: props.dropDown ? 0 : 10,
+      paddingVertical: props.dropDown ? 0 : 12,
       borderBottomRightRadius: props.dropDown ? 0 : 5,
       borderTopRightRadius: props.dropDown ? 0 : 5,
-      borderBottomLeftRadius: 5,
-      borderTopLeftRadius: 5,
-      borderStyle: 'solid',
-      borderColor: purple100,
-      borderWidth: props.dropDown ? 2 : 0,
-      borderRightWidth: 0,
+      borderBottomLeftRadius: props.dropDown ? 0 : 5,
+      borderTopLeftRadius: props.dropDown ? 0 : 5,
 
       color: black80,
       fontSize: textTwo,
 
-      marginBottom: 10,
+      marginBottom: props.dropDown ? 0 : 10,
     },
   });
 
