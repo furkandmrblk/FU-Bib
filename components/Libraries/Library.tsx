@@ -1,6 +1,9 @@
 import { gql, useQuery } from '@apollo/client';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/core';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
   crimson100,
@@ -11,7 +14,8 @@ import {
 } from '../../constants/Colors';
 import { textThree, textTwo } from '../../constants/Fonts';
 import { bodySubtitleStyle, bodyTitleStyle } from '../../screens/TabOneScreen';
-import { LibraryProps } from '../../utils/valueStore';
+import { RootStackParamList, RootTabParamList } from '../../types';
+import { LibraryProps } from '../../utils/types';
 import Button from '../Button/Button';
 import { ManropeText } from '../StyledText';
 
@@ -38,6 +42,8 @@ const getLibrary = gql`
 `;
 
 export const Library = (library: LibraryProps | any) => {
+  const navigation = useNavigation();
+
   const name = library.library.name;
 
   const libraryData = useQuery(getLibrary, {
@@ -71,7 +77,7 @@ export const Library = (library: LibraryProps | any) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       height: 25,
-      width: 65,
+      width: 60,
       backgroundColor: gray80,
       borderRadius: 5,
       borderStyle: 'solid',
@@ -88,7 +94,7 @@ export const Library = (library: LibraryProps | any) => {
         contentContainerStyle={{
           width: '100%',
           paddingLeft: 15,
-          paddingRight: 30,
+          paddingRight: Platform.OS === 'ios' ? 5 : 20,
         }}
       >
         {/* ERDGESCHOSS */}
@@ -119,7 +125,16 @@ export const Library = (library: LibraryProps | any) => {
                         { borderColor: table.booked ? crimson100 : emerald80 },
                       ]}
                     >
-                      <ManropeText>{table.identifier}</ManropeText>
+                      <ManropeText
+                        onPress={() => {
+                          if (!table.booked) {
+                            // Create QR Code with userId
+                            navigation.navigate('Root', { screen: 'TabThree' });
+                          }
+                        }}
+                      >
+                        {table.identifier}
+                      </ManropeText>
                     </View>
                   )}
                 </View>
@@ -158,7 +173,16 @@ export const Library = (library: LibraryProps | any) => {
                         { borderColor: table.booked ? crimson100 : emerald80 },
                       ]}
                     >
-                      <ManropeText>{table.identifier}</ManropeText>
+                      <ManropeText
+                        onPress={() => {
+                          if (!table.booked) {
+                            // Create QR Code with userId
+                            navigation.navigate('Root', { screen: 'TabThree' });
+                          }
+                        }}
+                      >
+                        {table.identifier}
+                      </ManropeText>
                     </View>
                   )}
                 </View>
@@ -197,7 +221,64 @@ export const Library = (library: LibraryProps | any) => {
                         { borderColor: table.booked ? crimson100 : emerald80 },
                       ]}
                     >
-                      <ManropeText>{table.identifier}</ManropeText>
+                      <ManropeText
+                        onPress={() => {
+                          if (!table.booked) {
+                            // Create QR Code with userId
+                            navigation.navigate('Root', { screen: 'TabThree' });
+                          }
+                        }}
+                      >
+                        {table.identifier}
+                      </ManropeText>
+                    </View>
+                  )}
+                </View>
+              )
+            )}
+        </View>
+        {/* 3. OBERGESCHOSS */}
+        {currentLibrary.floor!.includes('3.OG') && (
+          <ManropeText
+            bold={true}
+            style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+          >
+            3. Obergeschoss :
+          </ManropeText>
+        )}
+        <View style={styles.tableContainer}>
+          {currentLibrary
+            .table!.slice()
+            .sort((a, b) => a.order - b.order)
+            .map(
+              (
+                table: {
+                  id: string;
+                  booked: boolean;
+                  floor: string;
+                  identifier: string;
+                },
+                index: number
+              ) => (
+                <View key={index + 200}>
+                  {table.floor === '3.OG' && (
+                    <View
+                      key={index + 200}
+                      style={[
+                        styles.table,
+                        { borderColor: table.booked ? crimson100 : emerald80 },
+                      ]}
+                    >
+                      <ManropeText
+                        onPress={() => {
+                          if (!table.booked) {
+                            // Create QR Code with userId
+                            navigation.navigate('Root', { screen: 'TabThree' });
+                          }
+                        }}
+                      >
+                        {table.identifier}
+                      </ManropeText>
                     </View>
                   )}
                 </View>
@@ -216,13 +297,13 @@ export const bodyContainerStyle = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     width: '100%',
-    maxHeight: 490,
+    maxHeight: 470,
     backgroundColor: grayTransparent,
     borderRadius: 5,
     borderColor: purple100,
     borderStyle: 'solid',
     borderWidth: 2,
-    paddingVertical: 25,
+    paddingVertical: 10,
     marginBottom: 12.5,
     overflow: 'hidden',
   },

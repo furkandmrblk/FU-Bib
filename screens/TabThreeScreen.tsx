@@ -10,10 +10,13 @@ import { purple100, white } from '../constants/Colors';
 import { getLibrary } from '../utils/valueStore';
 import { containerStyle, headerTitleStyle } from './TabOneScreen';
 import QRCodeIcon from '../assets/images/QRCodeIcon';
+import { RootTabScreenProps } from '../types';
 
 const hasQR: boolean = false;
 
-export default function TabThreeScreen() {
+export default function TabThreeScreen({
+  navigation,
+}: RootTabScreenProps<'TabThree'>) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -35,7 +38,7 @@ export default function TabThreeScreen() {
             </ManropeText>
           ) : (
             <ManropeText bold={false} style={headerTitleStyle.title}>
-              Reservieren Sie sich zunächst einen Tisch in einer Bibliothek.
+              Reservieren Sie sich zuerst einen Tisch in einer Bibliothek.
             </ManropeText>
           )}
         </UpperBody>
