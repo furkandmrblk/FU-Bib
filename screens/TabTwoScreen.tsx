@@ -1,18 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/core';
-import { Platform, StyleSheet } from 'react-native';
 import { UpperBody } from '../components/Body/UpperBody';
 import { Header } from '../components/Header/Header';
 import { Library } from '../components/Libraries/Library';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import { black100, gray80, purple100, white } from '../constants/Colors';
-import { subtitleThree } from '../constants/Fonts';
+import { gray80, white } from '../constants/Colors';
 import { RootTabScreenProps } from '../types';
 import { getLibrary } from '../utils/valueStore';
 import ChooseLibIcon2 from '../assets/images/ChooseLibIcon2';
 import Button from '../components/Button/Button';
 import { containerStyle, headerTitleStyle } from './TabOneScreen';
+import deviceStorage from '../providers/deviceStorage';
 
 export default function TabTwoScreen({
   navigation,
@@ -22,6 +21,14 @@ export default function TabTwoScreen({
   useEffect(() => {
     getLibrary;
   }, [isFocused]);
+
+  const [pickedTable, setPickedTable] = useState<{
+    identifier: string | null;
+    background: string;
+  }>({
+    identifier: null,
+    background: gray80,
+  });
 
   return (
     <>
@@ -49,8 +56,22 @@ export default function TabTwoScreen({
         </UpperBody>
         {getLibrary() !== undefined && (
           <>
-            <Library library={getLibrary()} />
-            <Button backgroundColor={purple100}>
+            <Library
+              pickedTable={pickedTable}
+              setPickedTable={setPickedTable}
+              library={getLibrary()}
+            />
+            <Button
+              onPress={async () => {
+                if (pickedTable.identifier !== null) {
+                  await deviceStorage.set(
+                    'tableIdentifier',
+                    pickedTable.identifier
+                  );
+                  navigation.navigate('TabThree');
+                }
+              }}
+            >
               <ManropeText bold={true} style={{ color: white }}>
                 Reservieren
               </ManropeText>
