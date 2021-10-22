@@ -28,20 +28,13 @@ import { ApolloProvider } from '@apollo/client';
 import { createApolloClient } from '../utils/apollo';
 import { useIsAuthenticated } from '../providers/Auth';
 
-export default function Navigation({
-  colorScheme,
-}: {
-  colorScheme: ColorSchemeName;
-}) {
+export default function Navigation() {
   let initialState: any = false;
   const client = createApolloClient(initialState);
 
   return (
     <ApolloProvider client={client}>
-      <NavigationContainer
-        linking={LinkingConfiguration}
-        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-      >
+      <NavigationContainer linking={LinkingConfiguration} theme={DefaultTheme}>
         <RootNavigator />
       </NavigationContainer>
     </ApolloProvider>

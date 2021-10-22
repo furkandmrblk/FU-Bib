@@ -27,11 +27,9 @@ export const peach60: string = '#FE8F8F';
 
 export const emerald100: string = '#138900';
 export const emerald80: string = '#41B82D';
-export const emerald60: string = '#74D264';
 
 export const crimson100: string = '#F10C0C';
 export const crimson80: string = '#FF5050';
-export const crimson60: string = '#FF7A7A';
 
 export default {
   light: {
@@ -42,10 +40,10 @@ export default {
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: white,
-    background: black100,
-    tint: black80,
+    text: black100,
+    background: white,
+    tint: purple100,
     tabIconDefault: white,
-    tabIconSelected: tintColorDark,
+    tabIconSelected: tintColorLight,
   },
 };
