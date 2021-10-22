@@ -8,6 +8,7 @@ import { getLibrary } from '../../utils/valueStore';
 import { TableProps } from '../../utils/types';
 import { textOne } from '../../constants/Fonts';
 import QRCode from 'react-native-qrcode-svg';
+import { reservationTimer } from '../../utils/timer';
 
 interface QRProps {
   tableId: string | null | undefined;
@@ -16,7 +17,9 @@ interface QRProps {
 }
 
 export const QRContainer = ({ table, tableId, userId }: QRProps) => {
-  const [timerCount, setTimerCount] = useState<string | null>('30:00');
+  const [timerCount, setTimerCount] = useState<string | number | null>('30:00');
+
+  // reservationTimer()
 
   return (
     <LinearGradient
