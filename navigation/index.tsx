@@ -3,9 +3,11 @@ import {
   NavigationContainer,
   DefaultTheme,
   DarkTheme,
+  useIsFocused,
+  useNavigation,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ColorSchemeName } from 'react-native';
 
 import Colors from '../constants/Colors';
@@ -45,22 +47,26 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const auth = useIsAuthenticated();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    auth && navigation.navigate('Root', { screen: 'TabOne' });
+  }, [auth]);
+
   return (
     <Stack.Navigator>
-      {!auth && (
-        <Stack.Screen
-          name="SignIn"
-          component={SignInScreen}
-          options={{ headerShown: false }}
-        />
-      )}
-      {!auth && (
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          options={{ headerShown: false }}
-        />
-      )}
+      <Stack.Screen
+        name="SignIn"
+        component={SignInScreen}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="SignUp"
+        component={SignUpScreen}
+        options={{ headerShown: false }}
+      />
+
       {auth && (
         <Stack.Screen
           name="Root"

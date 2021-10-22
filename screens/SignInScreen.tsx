@@ -61,6 +61,7 @@ export const SignInScreen = ({
         res.signIn.__typename !== 'BaseError'
       ) {
         setAuthenticated(true);
+        navigation.navigate('Root', { screen: 'TabOne' });
       } else if (res.signIn.__typename == 'ZodError') {
         setError(res.signIn.fieldErrors![0].message);
       } else {
