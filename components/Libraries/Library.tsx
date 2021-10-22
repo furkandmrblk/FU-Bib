@@ -1,8 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { CompositeNavigationProp, useNavigation } from '@react-navigation/core';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
@@ -10,14 +7,15 @@ import {
   emerald80,
   gray80,
   grayTransparent,
+  peach100,
+  peach60,
   purple100,
 } from '../../constants/Colors';
-import { textThree, textTwo } from '../../constants/Fonts';
-import { bodySubtitleStyle, bodyTitleStyle } from '../../screens/TabOneScreen';
-import { RootStackParamList, RootTabParamList } from '../../types';
-import { LibraryProps } from '../../utils/types';
-import Button from '../Button/Button';
+import { textThree } from '../../constants/Fonts';
+import { LibraryProps, TableProps } from '../../utils/types';
 import { ManropeText } from '../StyledText';
+import { LinearGradient } from 'expo-linear-gradient';
+import { bodyTitleStyle, containerStyle } from '../../screens/TabOneScreen';
 
 const getLibrary = gql`
   query getLibrary($name: String!) {
@@ -41,10 +39,19 @@ const getLibrary = gql`
   }
 `;
 
-export const Library = (library: LibraryProps | any) => {
-  const navigation = useNavigation();
+interface LibProps {
+  library: LibraryProps | any;
+  pickedTable: {
+    identifier: string | null;
+    background: string;
+  };
+  setPickedTable: React.Dispatch<
+    React.SetStateAction<{ identifier: string | null; background: string }>
+  >;
+}
 
-  const name = library.library.name;
+export const Library = ({ library, pickedTable, setPickedTable }: LibProps) => {
+  const name = library.name;
 
   const libraryData = useQuery(getLibrary, {
     variables: {
@@ -53,14 +60,30 @@ export const Library = (library: LibraryProps | any) => {
   });
   if (libraryData.loading)
     return (
-      <View
-        style={[
-          bodyContainerStyle.container,
-          { justifyContent: 'center', alignItems: 'center' },
-        ]}
+      <LinearGradient
+        start={[1, 0]}
+        end={[0, 1]}
+        colors={[purple100, peach100]}
+        style={bodyContainerStyle.wrap}
       >
-        <ManropeText bold={true}>Loading... Please wait a moment.</ManropeText>
-      </View>
+        <View
+          style={[
+            bodyContainerStyle.container,
+            {
+              borderWidth: 0,
+              width: '98.95%',
+              marginBottom: 0,
+              maxHeight: 456,
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+          ]}
+        >
+          <ManropeText bold={true}>
+            Lädt... Bitte warten Sie einen Moment.
+          </ManropeText>
+        </View>
+      </LinearGradient>
     );
 
   const currentLibrary: LibraryProps = libraryData.data.getLibrary;
@@ -78,7 +101,6 @@ export const Library = (library: LibraryProps | any) => {
       alignItems: 'center',
       height: 25,
       width: 60,
-      backgroundColor: gray80,
       borderRadius: 5,
       borderStyle: 'solid',
       borderWidth: 2,
@@ -89,47 +111,58 @@ export const Library = (library: LibraryProps | any) => {
   });
 
   return (
-    <View style={bodyContainerStyle.container}>
-      <ScrollView
-        contentContainerStyle={{
-          width: '100%',
-          paddingLeft: 15,
-          paddingRight: Platform.OS === 'ios' ? 5 : 20,
-        }}
+    <LinearGradient
+      start={[1, 0]}
+      end={[0, 1]}
+      colors={[purple100, peach100]}
+      style={bodyContainerStyle.wrap}
+    >
+      <View
+        style={[
+          bodyContainerStyle.container,
+          { width: '98.95%', marginBottom: 0, maxHeight: 456 },
+        ]}
       >
-        {/* ERDGESCHOSS */}
-        {currentLibrary.floor!.includes('EG') && (
-          <ManropeText bold={true} style={bodyTitleStyle.bodyTitle}>
-            Erdgeschoss :
-          </ManropeText>
-        )}
-        <View style={styles.tableContainer}>
-          {currentLibrary
-            .table!.slice()
-            .sort((a, b) => a.order - b.order)
-            .map(
-              (
-                table: {
-                  id: string;
-                  booked: boolean;
-                  floor: string;
-                  identifier: string;
-                },
-                index: number
-              ) => (
+        <ScrollView
+          contentContainerStyle={{
+            width: '100%',
+            paddingLeft: 15,
+            paddingRight: Platform.OS === 'ios' ? 5 : 20,
+          }}
+        >
+          {/* ERDGESCHOSS */}
+          {currentLibrary.floor!.includes('EG') && (
+            <ManropeText bold={true} style={bodyTitleStyle.bodyTitle}>
+              Erdgeschoss :
+            </ManropeText>
+          )}
+          <View style={styles.tableContainer}>
+            {currentLibrary
+              .table!.slice()
+              .sort((a, b) => a.order - b.order)
+              .map((table: TableProps, index: number) => (
                 <View key={index}>
                   {table.floor === 'EG' && (
                     <View
                       style={[
                         styles.table,
-                        { borderColor: table.booked ? crimson100 : emerald80 },
+                        {
+                          borderColor: table.booked ? crimson100 : emerald80,
+                          backgroundColor: table.booked
+                            ? peach60
+                            : pickedTable.identifier === table.identifier
+                            ? pickedTable.background
+                            : gray80,
+                        },
                       ]}
                     >
                       <ManropeText
                         onPress={() => {
                           if (!table.booked) {
-                            // Create QR Code with userId
-                            navigation.navigate('Root', { screen: 'TabThree' });
+                            setPickedTable({
+                              identifier: table.identifier,
+                              background: emerald80,
+                            });
                           }
                         }}
                       >
@@ -138,155 +171,182 @@ export const Library = (library: LibraryProps | any) => {
                     </View>
                   )}
                 </View>
-              )
-            )}
-        </View>
-        {/* 1. OBERGESCHOSS */}
-        {currentLibrary.floor!.includes('1.OG') && (
-          <ManropeText
-            bold={true}
-            style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
-          >
-            1. Obergeschoss :
-          </ManropeText>
-        )}
-        <View style={styles.tableContainer}>
-          {currentLibrary
-            .table!.slice()
-            .sort((a, b) => a.order - b.order)
-            .map(
-              (
-                table: {
-                  id: string;
-                  booked: boolean;
-                  floor: string;
-                  identifier: string;
-                },
-                index: number
-              ) => (
-                <View key={index + 100}>
-                  {table.floor === '1.OG' && (
-                    <View
-                      key={index + 100}
-                      style={[
-                        styles.table,
-                        { borderColor: table.booked ? crimson100 : emerald80 },
-                      ]}
-                    >
-                      <ManropeText
-                        onPress={() => {
-                          if (!table.booked) {
-                            // Create QR Code with userId
-                            navigation.navigate('Root', { screen: 'TabThree' });
-                          }
-                        }}
+              ))}
+          </View>
+          {/* 1. OBERGESCHOSS */}
+          {currentLibrary.floor!.includes('1.OG') && (
+            <ManropeText
+              bold={true}
+              style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+            >
+              1. Obergeschoss :
+            </ManropeText>
+          )}
+          <View style={styles.tableContainer}>
+            {currentLibrary
+              .table!.slice()
+              .sort((a, b) => a.order - b.order)
+              .map(
+                (
+                  table: {
+                    id: string;
+                    booked: boolean;
+                    floor: string;
+                    identifier: string;
+                  },
+                  index: number
+                ) => (
+                  <View key={index + 100}>
+                    {table.floor === '1.OG' && (
+                      <View
+                        key={index + 100}
+                        style={[
+                          styles.table,
+                          {
+                            borderColor: table.booked ? crimson100 : emerald80,
+                            backgroundColor: table.booked
+                              ? peach60
+                              : pickedTable.identifier === table.identifier
+                              ? pickedTable.background
+                              : gray80,
+                          },
+                        ]}
                       >
-                        {table.identifier}
-                      </ManropeText>
-                    </View>
-                  )}
-                </View>
-              )
-            )}
-        </View>
-        {/* 2. OBERGESCHOSS */}
-        {currentLibrary.floor!.includes('2.OG') && (
-          <ManropeText
-            bold={true}
-            style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
-          >
-            2. Obergeschoss :
-          </ManropeText>
-        )}
-        <View style={styles.tableContainer}>
-          {currentLibrary
-            .table!.slice()
-            .sort((a, b) => a.order - b.order)
-            .map(
-              (
-                table: {
-                  id: string;
-                  booked: boolean;
-                  floor: string;
-                  identifier: string;
-                },
-                index: number
-              ) => (
-                <View key={index + 100}>
-                  {table.floor === '2.OG' && (
-                    <View
-                      key={index + 100}
-                      style={[
-                        styles.table,
-                        { borderColor: table.booked ? crimson100 : emerald80 },
-                      ]}
-                    >
-                      <ManropeText
-                        onPress={() => {
-                          if (!table.booked) {
-                            // Create QR Code with userId
-                            navigation.navigate('Root', { screen: 'TabThree' });
-                          }
-                        }}
+                        <ManropeText
+                          onPress={() => {
+                            if (!table.booked) {
+                              setPickedTable({
+                                identifier: table.identifier,
+                                background: emerald80,
+                              });
+                            }
+                          }}
+                        >
+                          {table.identifier}
+                        </ManropeText>
+                      </View>
+                    )}
+                  </View>
+                )
+              )}
+          </View>
+          {/* 2. OBERGESCHOSS */}
+          {currentLibrary.floor!.includes('2.OG') && (
+            <ManropeText
+              bold={true}
+              style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+            >
+              2. Obergeschoss :
+            </ManropeText>
+          )}
+          <View style={styles.tableContainer}>
+            {currentLibrary
+              .table!.slice()
+              .sort((a, b) => a.order - b.order)
+              .map(
+                (
+                  table: {
+                    id: string;
+                    booked: boolean;
+                    floor: string;
+                    identifier: string;
+                  },
+                  index: number
+                ) => (
+                  <View key={index + 100}>
+                    {table.floor === '2.OG' && (
+                      <View
+                        key={index + 100}
+                        style={[
+                          styles.table,
+                          {
+                            borderColor: table.booked ? crimson100 : emerald80,
+                            backgroundColor: table.booked
+                              ? peach60
+                              : pickedTable.identifier === table.identifier
+                              ? pickedTable.background
+                              : gray80,
+                          },
+                        ]}
                       >
-                        {table.identifier}
-                      </ManropeText>
-                    </View>
-                  )}
-                </View>
-              )
-            )}
-        </View>
-        {/* 3. OBERGESCHOSS */}
-        {currentLibrary.floor!.includes('3.OG') && (
-          <ManropeText
-            bold={true}
-            style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
-          >
-            3. Obergeschoss :
-          </ManropeText>
-        )}
-        <View style={styles.tableContainer}>
-          {currentLibrary
-            .table!.slice()
-            .sort((a, b) => a.order - b.order)
-            .map(
-              (
-                table: {
-                  id: string;
-                  booked: boolean;
-                  floor: string;
-                  identifier: string;
-                },
-                index: number
-              ) => (
-                <View key={index + 200}>
-                  {table.floor === '3.OG' && (
-                    <View
-                      key={index + 200}
-                      style={[
-                        styles.table,
-                        { borderColor: table.booked ? crimson100 : emerald80 },
-                      ]}
-                    >
-                      <ManropeText
-                        onPress={() => {
-                          if (!table.booked) {
-                            // Create QR Code with userId
-                            navigation.navigate('Root', { screen: 'TabThree' });
-                          }
-                        }}
+                        <ManropeText
+                          onPress={() => {
+                            if (!table.booked) {
+                              setPickedTable({
+                                identifier: table.identifier,
+                                background: emerald80,
+                              });
+                            }
+                          }}
+                        >
+                          {table.identifier}
+                        </ManropeText>
+                      </View>
+                    )}
+                  </View>
+                )
+              )}
+          </View>
+          {/* 3. OBERGESCHOSS */}
+          {currentLibrary.floor!.includes('3.OG') && (
+            <ManropeText
+              bold={true}
+              style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+            >
+              3. Obergeschoss :
+            </ManropeText>
+          )}
+          <View style={styles.tableContainer}>
+            {currentLibrary
+              .table!.slice()
+              .sort((a, b) => a.order - b.order)
+              .map(
+                (
+                  table: {
+                    id: string;
+                    booked: boolean;
+                    floor: string;
+                    identifier: string;
+                  },
+                  index: number
+                ) => (
+                  <View key={index + 200}>
+                    {table.floor === '3.OG' && (
+                      <View
+                        key={index + 200}
+                        style={[
+                          styles.table,
+                          {
+                            borderColor: table.booked ? crimson100 : emerald80,
+                            backgroundColor: table.booked
+                              ? peach60
+                              : pickedTable.identifier === table.identifier
+                              ? pickedTable.background
+                              : gray80,
+                          },
+                        ]}
                       >
-                        {table.identifier}
-                      </ManropeText>
-                    </View>
-                  )}
-                </View>
-              )
-            )}
-        </View>
-      </ScrollView>
-    </View>
+                        <ManropeText
+                          onPress={() => {
+                            if (!table.booked) {
+                              setPickedTable({
+                                identifier: table.identifier,
+                                background: emerald80,
+                              });
+                            }
+                          }}
+                        >
+                          {table.identifier}
+                        </ManropeText>
+                      </View>
+                    )}
+                  </View>
+                )
+              )}
+          </View>
+        </ScrollView>
+      </View>
+    </LinearGradient>
   );
 };
 
@@ -300,11 +360,18 @@ export const bodyContainerStyle = StyleSheet.create({
     maxHeight: 470,
     backgroundColor: grayTransparent,
     borderRadius: 5,
-    borderColor: purple100,
-    borderStyle: 'solid',
-    borderWidth: 2,
     paddingVertical: 10,
     marginBottom: 12.5,
     overflow: 'hidden',
+  },
+  wrap: {
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    width: '100%',
+    height: 460,
+
+    borderRadius: 7,
+    marginBottom: 15,
   },
 });

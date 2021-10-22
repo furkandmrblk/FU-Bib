@@ -4,7 +4,8 @@ import {
   RectButton as DefaultButton,
   RectButtonProps,
 } from 'react-native-gesture-handler';
-import { white } from '../../constants/Colors';
+import { peach100, purple100 } from '../../constants/Colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type ThemeProps = {
   lightColor?: string;
@@ -27,21 +28,43 @@ const Button = ({
 }: ButtonProps) => {
   const styles = StyleSheet.create({
     container: {
-      display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       width: width ? width : '100%',
-      backgroundColor: backgroundColor ? backgroundColor : white,
-      borderRadius: 5,
       paddingHorizontal: 7,
       paddingVertical: 15,
     },
   });
 
   return (
-    <DefaultButton style={[styles.container]} {...props}>
-      {children}
-    </DefaultButton>
+    <>
+      {backgroundColor ? (
+        <DefaultButton
+          style={[
+            styles.container,
+            {
+              backgroundColor: backgroundColor,
+              borderRadius: 5,
+              width: width ? width : '100%',
+            },
+          ]}
+          {...props}
+        >
+          {children}
+        </DefaultButton>
+      ) : (
+        <LinearGradient
+          style={{ width: '100%', borderRadius: 5 }}
+          start={[1, 0]}
+          end={[0, 1]}
+          colors={[purple100, peach100]}
+        >
+          <DefaultButton style={[styles.container]} {...props}>
+            {children}
+          </DefaultButton>
+        </LinearGradient>
+      )}
+    </>
   );
 };
 

@@ -4,7 +4,7 @@ import { Header } from '../components/Header/Header';
 import { View } from '../components/Themed';
 import { ManropeText } from '../components/StyledText';
 import { UpperBody } from '../components/Body/UpperBody';
-import { subtitleThree, textOne, textThree, textTwo } from '../constants/Fonts';
+import { subtitleThree, textThree, textTwo } from '../constants/Fonts';
 import { RootTabScreenProps } from '../types';
 import Input from '../components/Input/Input';
 import {
@@ -12,13 +12,14 @@ import {
   black80,
   gray80,
   purple100,
-  white,
+  peach100,
 } from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Dropdown } from '../components/Dropdown/Dropdown';
 import { getLibrary } from '../utils/valueStore';
 import LibIcon from '../assets/images/LibIcon';
 import { gql, useQuery } from '@apollo/client';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const getLibraries = gql`
   query getLibraries {
@@ -48,17 +49,24 @@ export default function TabOneScreen({
             Wählen Sie eine Bibliothek aus:
           </ManropeText>
           <Pressable onPress={() => setOpenLibraries(!openLibraries)}>
-            <View style={styles.inputWrap}>
-              <Input
-                value={getLibrary()?.name}
-                placeholder="Bibliothek auswählen"
-                pointerEvents="none"
-                dropDown={true}
-                editable={false}
-              />
+            <LinearGradient
+              start={[1, 0]}
+              end={[0, 1]}
+              colors={[purple100, peach100]}
+              style={styles.inputWrap}
+            >
+              <View style={styles.input}>
+                <Input
+                  value={getLibrary()?.name}
+                  placeholder="Bibliothek auswählen"
+                  pointerEvents="none"
+                  dropDown={true}
+                  editable={false}
+                />
 
-              <Ionicons name="chevron-down" size={22} color={black80} />
-            </View>
+                <Ionicons name="chevron-down" size={22} color={black80} />
+              </View>
+            </LinearGradient>
             {!libraryData.loading && (
               <Dropdown
                 open={openLibraries}
@@ -113,21 +121,24 @@ export const bodySubtitleStyle = StyleSheet.create({
 
 const styles = StyleSheet.create({
   inputWrap: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: Platform.OS === 'ios' ? 54 : 59,
+    width: 350,
+    borderRadius: 7,
+    marginBottom: 5,
+  },
+  input: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     height: Platform.OS === 'ios' ? 50 : 55,
-    minWidth: '100%',
-    maxWidth: '100%',
+    width: '98.95%',
     backgroundColor: gray80,
-    borderStyle: 'solid',
-    borderColor: purple100,
-    borderWidth: 2,
     borderRadius: 5,
 
     paddingLeft: 10,
     paddingRight: 30,
     paddingVertical: 10,
-    marginBottom: 5,
   },
 });

@@ -13,6 +13,7 @@ import {
   grayTransparent,
   purple100,
   white,
+  peach100,
 } from '../constants/Colors';
 import { subtitleThree, textThree } from '../constants/Fonts';
 import { Formik } from 'formik';
@@ -20,6 +21,7 @@ import Input from '../components/Input/Input';
 import { RootStackScreenProps } from '../types';
 import { useAuth } from '../providers/Auth';
 import { containerStyle, headerTitleStyle } from './TabOneScreen';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const signIn = gql`
   mutation signIn($email: String!, $password: String!) {
@@ -76,92 +78,104 @@ export const SignInScreen = ({
             Melde dich an und reserviere dir einen Platz in eine der vielen
             Bibliotheken der Freien Universität Berlins.
           </ManropeText>
-          <PatternLeft one={true} two={true} />
+          <PatternLeft one={true} />
         </UpperBody>
-
-        <Formik
-          initialValues={{ email: '', password: '' }}
-          onSubmit={async (values) => {
-            try {
-              login({
-                variables: { email: values.email, password: values.password },
-              });
-            } catch (error) {
-              console.log(error);
-            }
-          }}
+        <LinearGradient
+          start={[1, 0]}
+          end={[0, 1]}
+          colors={[purple100, peach100]}
+          style={gradientStyle.wrap}
         >
-          {({ handleChange, handleBlur, handleSubmit, values }) => (
-            <View style={modalStyles.modal}>
-              <ManropeText style={modalStyles.modalTitle} bold={true}>
-                Login
-              </ManropeText>
-              <Input
-                autoCapitalize="none"
-                autoCorrect={false}
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                value={values.email}
-                placeholder="Email"
-              />
-              <Input
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry={true}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-                placeholder="Passwort"
-              />
-              {error && (
-                <ManropeText
-                  style={{
-                    textAlign: 'center',
-                    fontSize: textThree,
-                    color: crimson100,
-                    marginBottom: 10,
-                  }}
-                >
-                  {error}
-                </ManropeText>
-              )}
-
-              <Button
-                backgroundColor={purple100}
-                onPress={() => handleSubmit()}
-              >
-                <ManropeText style={{ color: white }} bold={true}>
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            onSubmit={(values) => {
+              try {
+                login({
+                  variables: { email: values.email, password: values.password },
+                });
+              } catch (error) {
+                console.log(error);
+              }
+            }}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values }) => (
+              <View style={modalStyles.modal}>
+                <ManropeText style={modalStyles.modalTitle} bold={true}>
                   Login
                 </ManropeText>
-              </Button>
-              <View
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                  width: '100%',
-                  backgroundColor: 'rgba(255,255,255,0)',
-                  marginTop: 7.5,
-                }}
-              >
-                <ManropeText style={modalStyles.text}>
-                  Kein Account?{' '}
+                <Input
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
+                  placeholder="Email"
+                />
+                <Input
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  secureTextEntry={true}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
+                  placeholder="Passwort"
+                />
+                {error && (
                   <ManropeText
-                    bold={true}
-                    style={{ textDecorationLine: 'underline' }}
-                    onPress={() => navigation.navigate('SignUp')}
+                    style={{
+                      textAlign: 'center',
+                      fontSize: textThree,
+                      color: crimson100,
+                      marginBottom: 10,
+                    }}
                   >
-                    Hier registrieren.
+                    {error}
                   </ManropeText>
-                </ManropeText>
+                )}
+
+                <Button onPress={() => handleSubmit()}>
+                  <ManropeText style={{ color: white }} bold={true}>
+                    Login
+                  </ManropeText>
+                </Button>
+                <View
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    backgroundColor: 'rgba(255,255,255,0)',
+                    marginTop: 7.5,
+                  }}
+                >
+                  <ManropeText style={modalStyles.text}>
+                    Kein Account?{' '}
+                    <ManropeText
+                      bold={true}
+                      style={{ textDecorationLine: 'underline' }}
+                      onPress={() => navigation.navigate('SignUp')}
+                    >
+                      Hier registrieren.
+                    </ManropeText>
+                  </ManropeText>
+                </View>
               </View>
-            </View>
-          )}
-        </Formik>
+            )}
+          </Formik>
+        </LinearGradient>
         <PatternLeft left={true} />
       </View>
     </>
   );
 };
+
+export const gradientStyle = StyleSheet.create({
+  wrap: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 2,
+    borderRadius: 7,
+  },
+});
 
 export const modalStyles = StyleSheet.create({
   modal: {
@@ -174,9 +188,6 @@ export const modalStyles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 24,
     paddingBottom: 16,
-    borderStyle: 'solid',
-    borderColor: purple100,
-    borderWidth: 2,
   },
   modalTitle: {
     color: black100,

@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import { Text, View } from '../Themed';
+import { View } from '../Themed';
 import { titleOne } from '../../constants/Fonts';
-import { purple100 } from '../../constants/Colors';
+import { peach100, purple100 } from '../../constants/Colors';
 import { ManropeText } from '../StyledText';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export const Logo = () => {
   const styles = StyleSheet.create({
@@ -30,7 +31,12 @@ export const Logo = () => {
       <ManropeText bold={true} style={styles.title}>
         FU Bib
       </ManropeText>
-      <View style={styles.logoLine} />
+      <LinearGradient
+        start={[1, 0]}
+        end={[0, 1]}
+        colors={[purple100, peach100]}
+        style={styles.logoLine}
+      />
     </View>
   );
 };

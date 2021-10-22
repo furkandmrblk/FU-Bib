@@ -1,18 +1,25 @@
 import React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
-import { black100, gray100, gray80, purple100 } from '../../constants/Colors';
+import {
+  black100,
+  gray100,
+  gray80,
+  peach100,
+  purple100,
+} from '../../constants/Colors';
 import { textTwo } from '../../constants/Fonts';
 import { setLibrary } from '../../utils/valueStore';
 import { LibraryProps } from '../../utils/types';
 import { ManropeText } from '../StyledText';
 import { View } from '../Themed';
+import { LinearGradient } from 'expo-linear-gradient';
+import { gradientStyle } from '../../screens/SignInScreen';
 
 type DropdownProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  items: LibraryProps[] | undefined;
-  width?: number | string;
+  items: LibraryProps[] | null;
   chooseLibrary?: boolean;
 };
 
@@ -29,20 +36,16 @@ export const Dropdown = (props: DropdownProps) => {
 
       minHeight: 290,
       maxHeight: 290,
-      maxWidth: props.width ? props.width : '100%',
-
       backgroundColor: gray80,
       borderRadius: 5,
-      borderStyle: 'solid',
-      borderColor: purple100,
-      borderWidth: 2,
+      maxWidth: '100%',
 
-      paddingHorizontal: Platform.OS == 'ios' ? 2 : 6,
+      paddingHorizontal: Platform.OS == 'ios' ? 0 : 6,
       paddingVertical: 8,
       // marginTop: Platform.OS == 'android' ? 10 : 0,
     },
     itemWrap: {
-      width: '100%',
+      maxWidth: '100%',
       paddingLeft: 6,
       paddingRight: 12,
     },
@@ -63,34 +66,41 @@ export const Dropdown = (props: DropdownProps) => {
   return (
     <>
       {props.open ? (
-        <View style={styles.container}>
-          <ScrollView
-            contentContainerStyle={{
-              flexGrow: 1,
-            }}
-            removeClippedSubviews={true}
-            nestedScrollEnabled={true}
-            style={styles.itemWrap}
-          >
-            {props
-              .items!.slice()
-              .sort((a, b) => (a.section as any) - b.section)
-              .map((item, index: number) => (
-                <Pressable
-                  key={index}
-                  style={{ width: '100%' }}
-                  onPress={() => {
-                    props.setOpen(false);
-                    setLibrary(item);
-                    props.chooseLibrary &&
-                      navigation.navigate('Root', { screen: 'TabTwo' });
-                  }}
-                >
-                  <ManropeText style={styles.item}>{item.name}</ManropeText>
-                </Pressable>
-              ))}
-          </ScrollView>
-        </View>
+        <LinearGradient
+          start={[1, 0]}
+          end={[0, 1]}
+          colors={[purple100, peach100]}
+          style={[gradientStyle.wrap]}
+        >
+          <View style={styles.container}>
+            <ScrollView
+              contentContainerStyle={{
+                flexGrow: 1,
+              }}
+              removeClippedSubviews={true}
+              nestedScrollEnabled={true}
+              style={styles.itemWrap}
+            >
+              {props
+                .items!.slice()
+                .sort((a, b) => (a.section as any) - (b.section as any))
+                .map((item, index: number) => (
+                  <Pressable
+                    key={index}
+                    style={{ width: '100%' }}
+                    onPress={() => {
+                      props.setOpen(false);
+                      setLibrary(item);
+                      props.chooseLibrary &&
+                        navigation.navigate('Root', { screen: 'TabTwo' });
+                    }}
+                  >
+                    <ManropeText style={styles.item}>{item.name}</ManropeText>
+                  </Pressable>
+                ))}
+            </ScrollView>
+          </View>
+        </LinearGradient>
       ) : null}
     </>
   );
