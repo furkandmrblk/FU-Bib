@@ -17,3 +17,18 @@ export type LibraryProps = {
     time: number;
   }[];
 };
+
+export type TableProps = {
+  id: string;
+  identifier: string;
+  order: number;
+  floor: string;
+  booked: boolean;
+  time: number;
+  library?: {
+    name: string;
+    adress: string;
+    email: string;
+    website: string;
+  };
+};
