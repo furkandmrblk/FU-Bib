@@ -15,6 +15,7 @@ type ThemeProps = {
 type ExtraProps = {
   width?: number | string;
   backgroundColor?: string;
+  scanButton?: boolean;
   children: ReactNode;
 };
 
@@ -24,6 +25,7 @@ const Button = ({
   children,
   width,
   backgroundColor,
+  scanButton,
   ...props
 }: ButtonProps) => {
   const styles = StyleSheet.create({
@@ -32,7 +34,7 @@ const Button = ({
       justifyContent: 'center',
       width: width ? width : '100%',
       paddingHorizontal: 7,
-      paddingVertical: 15,
+      paddingVertical: scanButton ? 20 : 15,
     },
   });
 
@@ -44,7 +46,7 @@ const Button = ({
             styles.container,
             {
               backgroundColor: backgroundColor,
-              borderRadius: 5,
+              borderRadius: scanButton ? 0 : 5,
               width: width ? width : '100%',
             },
           ]}
