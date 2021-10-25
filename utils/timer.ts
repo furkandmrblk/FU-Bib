@@ -1,22 +1,30 @@
 import React from 'react';
 
-type TimerProps = {
-  timer: number;
-  setTimerCount: React.Dispatch<React.SetStateAction<string | number | null>>;
-};
-
-export const reservationTimer = ({ timer, setTimerCount }: TimerProps) => {
+export const reservationTimer = (
+  timer: number,
+  setTimerCount: React.Dispatch<React.SetStateAction<string | number | null>>
+) => {
   const qrTimer = setInterval(() => {
     let now = new Date().getTime();
     let diff = timer - now;
 
     if (diff <= 0) {
       clearInterval(qrTimer);
-      setTimerCount('Zeit abgelaufen.');
+      return setTimerCount('Zeit abgelaufen');
     }
     var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    setTimerCount(minutes + ' : ' + seconds);
+    let styledSeconds: number | string = seconds;
+    let styledMinutes: number | string = minutes;
+
+    if (seconds <= 9) {
+      styledSeconds = '0' + seconds;
+    }
+    if (minutes <= 9) {
+      styledMinutes = '0' + minutes;
+    }
+
+    return setTimerCount(styledMinutes + ' : ' + styledSeconds);
   }, 1000);
 };

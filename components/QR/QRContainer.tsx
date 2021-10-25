@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View } from '../Themed';
 import { LinearGradient } from 'expo-linear-gradient';
-import { crimson100, peach100, purple100 } from '../../constants/Colors';
+import {
+  black80,
+  crimson100,
+  crimson80,
+  peach100,
+  purple100,
+} from '../../constants/Colors';
 import { bodyContainerStyle } from '../Libraries/Library';
 import { ManropeText } from '../StyledText';
 import { getLibrary } from '../../utils/valueStore';
@@ -9,17 +15,30 @@ import { TableProps } from '../../utils/types';
 import { textOne } from '../../constants/Fonts';
 import QRCode from 'react-native-qrcode-svg';
 import { reservationTimer } from '../../utils/timer';
+import deviceStorage from '../../providers/deviceStorage';
 
 interface QRProps {
   tableId: string | null | undefined;
   userId: string | null;
   table: TableProps | null;
+  timerCount: string | number | null;
+  setTimerCount: React.Dispatch<React.SetStateAction<string | number | null>>;
 }
 
-export const QRContainer = ({ table, tableId, userId }: QRProps) => {
-  const [timerCount, setTimerCount] = useState<string | number | null>('30:00');
+async function abc() {
+  await deviceStorage.delete('tableIdentifier');
+}
 
-  // reservationTimer()
+// abc();
+
+export const QRContainer = ({
+  table,
+  tableId,
+  userId,
+  timerCount,
+  setTimerCount,
+}: QRProps) => {
+  reservationTimer(table!.time, setTimerCount);
 
   return (
     <LinearGradient
@@ -54,9 +73,22 @@ export const QRContainer = ({ table, tableId, userId }: QRProps) => {
           backgroundColor="transparent"
           size={225}
         />
-        <ManropeText style={{ marginTop: 35, fontSize: textOne }} bold={true}>
-          {timerCount}
-        </ManropeText>
+
+        {timerCount === 'Zeit abgelaufen' ? (
+          <ManropeText
+            style={{ marginTop: 35, fontSize: textOne, color: crimson100 }}
+            bold={true}
+          >
+            {timerCount}
+          </ManropeText>
+        ) : (
+          <ManropeText
+            style={{ marginTop: 35, fontSize: textOne, color: black80 }}
+            bold={true}
+          >
+            {timerCount}
+          </ManropeText>
+        )}
       </View>
     </LinearGradient>
   );
