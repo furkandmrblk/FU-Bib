@@ -1,11 +1,10 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { UpperBody } from '../components/Body/UpperBody';
 import Button from '../components/Button/Button';
 import { Header } from '../components/Header/Header';
-import { bodyContainerStyle } from '../components/Libraries/Library';
 import { PatternLeft } from '../components/Patterns/PatternLeft';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
@@ -19,11 +18,6 @@ import {
   purple80,
   white,
 } from '../constants/Colors';
-import {
-  bodyTitleStyle,
-  containerStyle,
-  headerTitleStyle,
-} from './TabOneScreen';
 import { getCurrentUser } from './TabThreeScreen';
 import { gql } from '@apollo/client';
 import deviceStorage from '../providers/deviceStorage';
@@ -32,6 +26,12 @@ import { Pressable } from 'react-native';
 import Input from '../components/Input/Input';
 import { useNavigation } from '@react-navigation/core';
 import { useIsAuthenticated } from '../providers/Auth';
+import {
+  bodyContainerStyle,
+  bodyTitleStyle,
+  containerStyle,
+  headerTitleStyle,
+} from '../utils/styles';
 
 const signOut = gql`
   mutation signOut {
@@ -99,7 +99,7 @@ export default function TabFiveScreen() {
               bodyContainerStyle.container,
               {
                 borderWidth: 0,
-                width: '98.95%',
+                width: '100%',
                 marginBottom: 0,
                 maxHeight: 490,
                 justifyContent: 'center',
@@ -207,7 +207,9 @@ export default function TabFiveScreen() {
                   >
                     {({ handleSubmit }) => (
                       <Button
-                        onPress={() => handleSubmit()}
+                        onPress={() => {
+                          handleSubmit();
+                        }}
                         backgroundColor={crimson80}
                         width="59.5%"
                       >

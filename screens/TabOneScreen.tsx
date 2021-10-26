@@ -20,6 +20,7 @@ import { getLibrary } from '../utils/valueStore';
 import LibIcon from '../assets/images/LibIcon';
 import { gql, useQuery } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
+import { containerStyle, headerTitleStyle } from '../utils/styles';
 
 const getLibraries = gql`
   query getLibraries {
@@ -85,46 +86,13 @@ export default function TabOneScreen({
   );
 }
 
-export const containerStyle = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingHorizontal: 20,
-  },
-});
-
-export const headerTitleStyle = StyleSheet.create({
-  title: {
-    color: black100,
-    fontSize: subtitleThree,
-    marginBottom: 10,
-  },
-});
-
-export const bodyTitleStyle = StyleSheet.create({
-  bodyTitle: {
-    fontSize: textTwo,
-    marginBottom: 10,
-  },
-});
-
-export const bodySubtitleStyle = StyleSheet.create({
-  bodySubtitle: {
-    fontSize: textThree,
-    marginBottom: 10,
-  },
-});
-
 const styles = StyleSheet.create({
   inputWrap: {
     justifyContent: 'center',
     alignItems: 'center',
     height: Platform.OS === 'ios' ? 54 : 59,
-    width: 350,
+    maxWidth: '100%',
+    padding: 2,
     borderRadius: 7,
     marginBottom: 5,
   },
@@ -133,10 +101,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     height: Platform.OS === 'ios' ? 50 : 55,
-    width: '98.95%',
+    width: '100%',
     backgroundColor: gray80,
     borderRadius: 5,
-
     paddingLeft: 10,
     paddingRight: 30,
     paddingVertical: 10,

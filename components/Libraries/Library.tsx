@@ -15,7 +15,7 @@ import { textThree } from '../../constants/Fonts';
 import { LibraryProps, TableProps } from '../../utils/types';
 import { ManropeText } from '../StyledText';
 import { LinearGradient } from 'expo-linear-gradient';
-import { bodyTitleStyle, containerStyle } from '../../screens/TabOneScreen';
+import { bodyContainerStyle, bodyTitleStyle } from '../../utils/styles';
 
 const getLibrary = gql`
   query getLibrary($name: String!) {
@@ -71,7 +71,7 @@ export const Library = ({ library, pickedTable, setPickedTable }: LibProps) => {
             bodyContainerStyle.container,
             {
               borderWidth: 0,
-              width: '98.95%',
+              width: '100%',
               marginBottom: 0,
               maxHeight: 456,
               justifyContent: 'center',
@@ -120,7 +120,7 @@ export const Library = ({ library, pickedTable, setPickedTable }: LibProps) => {
       <View
         style={[
           bodyContainerStyle.container,
-          { width: '98.95%', marginBottom: 0, maxHeight: 456 },
+          { width: '100%', marginBottom: 0, maxHeight: 456 },
         ]}
       >
         <ScrollView
@@ -349,29 +349,3 @@ export const Library = ({ library, pickedTable, setPickedTable }: LibProps) => {
     </LinearGradient>
   );
 };
-
-export const bodyContainerStyle = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    width: '100%',
-    maxHeight: 470,
-    backgroundColor: grayTransparent,
-    borderRadius: 5,
-    paddingVertical: 10,
-    marginBottom: 12.5,
-    overflow: 'hidden',
-  },
-  wrap: {
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    width: '100%',
-    height: 460,
-
-    borderRadius: 7,
-    marginBottom: 15,
-  },
-});

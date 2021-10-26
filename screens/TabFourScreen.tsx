@@ -4,9 +4,7 @@ import { UpperBody } from '../components/Body/UpperBody';
 import { Header } from '../components/Header/Header';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import { black100 } from '../constants/Colors';
-import { subtitleThree } from '../constants/Fonts';
-import { containerStyle, headerTitleStyle } from './TabOneScreen';
+import { containerStyle, headerTitleStyle } from '../utils/styles';
 
 export default function TabFourScreen() {
   return (

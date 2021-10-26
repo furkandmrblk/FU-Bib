@@ -12,9 +12,13 @@ import { crimson100, purple100, peach100, white } from '../constants/Colors';
 import { textThree } from '../constants/Fonts';
 import { PatternLeft } from '../components/Patterns/PatternLeft';
 import { useAuth } from '../providers/Auth';
-import { containerStyle, headerTitleStyle } from './TabOneScreen';
 import { LinearGradient } from 'expo-linear-gradient';
-import { gradientStyle, modalStyles } from './SignInScreen';
+import {
+  containerStyle,
+  gradientStyle,
+  headerTitleStyle,
+  modalStyles,
+} from '../utils/styles';
 
 const signUp = gql`
   mutation signUp(
@@ -113,6 +117,7 @@ export const SignUpScreen = ({
                   Registration
                 </ManropeText>
                 <Input
+                  keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
                   onChangeText={handleChange('email')}

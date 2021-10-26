@@ -10,11 +10,11 @@ import { RootTabScreenProps } from '../types';
 import { getLibrary } from '../utils/valueStore';
 import ChooseLibIcon2 from '../assets/images/ChooseLibIcon2';
 import Button from '../components/Button/Button';
-import { containerStyle, headerTitleStyle } from './TabOneScreen';
 import deviceStorage from '../providers/deviceStorage';
 import { gql, useMutation } from '@apollo/client';
 import { Formik } from 'formik';
 import { textThree } from '../constants/Fonts';
+import { containerStyle, headerTitleStyle } from '../utils/styles';
 
 const bookTable = gql`
   mutation bookTable($identifier: String!) {
@@ -60,7 +60,6 @@ export default function TabTwoScreen({
         setError(res.bookTable.message!);
       } else {
         setError(null);
-        await deviceStorage.set('tableIdentifier', pickedTable.identifier!);
         navigation.navigate('TabThree');
       }
     },
@@ -128,6 +127,11 @@ export default function TabTwoScreen({
                   onPress={async () => {
                     if (pickedTable.identifier == null) {
                       setError('Bitte wählen Sie einen Tisch aus.');
+                    } else {
+                      await deviceStorage.set(
+                        'tableIdentifier',
+                        pickedTable.identifier
+                      );
                     }
                     handleSubmit();
                   }}

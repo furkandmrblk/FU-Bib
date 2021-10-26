@@ -5,26 +5,18 @@ import Button from '../components/Button/Button';
 import { Header } from '../components/Header/Header';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import {
-  crimson80,
-  grayTransparent,
-  purple100,
-  white,
-} from '../constants/Colors';
-import { getIdentifier, getLibrary } from '../utils/valueStore';
-import { containerStyle, headerTitleStyle } from './TabOneScreen';
+import { crimson80, white } from '../constants/Colors';
+import { getLibrary } from '../utils/valueStore';
 import QRCodeIcon from '../assets/images/QRCodeIcon';
 import { RootTabScreenProps } from '../types';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { QRContainer } from '../components/QR/QRContainer';
 import { Formik } from 'formik';
+import { QRScanner } from '../components/QR/QRScanner';
+import { QRSettingsTop } from '../components/QR/QRSettingsTop';
+import { StyleSheet } from 'react-native';
 import deviceStorage from '../providers/deviceStorage';
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
-import { Dimensions, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import BarcodeMask from 'react-native-barcode-mask';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Toggle } from '../components/Switch/Switch';
+import { containerStyle, headerTitleStyle } from '../utils/styles';
 
 const getTable = gql`
   query getTable($identifier: String!) {
@@ -53,6 +45,7 @@ export const getCurrentUser = gql`
       admin
       major
       booked
+      tableIdentifier
       mostUsedLibrary
       mostUsedTable
       reservations
@@ -73,24 +66,23 @@ export const cancelBooking = gql`
   }
 `;
 
+export const endBooking = gql`
+  mutation endBooking {
+    endBooking {
+      id
+      identifier
+      userId
+      booked
+      time
+    }
+  }
+`;
+
 export default function TabThreeScreen({
   navigation,
 }: RootTabScreenProps<'TabThree'>) {
-  const [toggleQR, setToggleQR] = useState<boolean>(true);
-
-  // QR Code Scanner Stuff
+  const [toggleQR, setToggleQR] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [scanned, setScanned] = useState<boolean>(false);
-  const [type, setType] = useState<any>(BarCodeScanner.Constants.Type.back);
-
-  const finderWidth: number = 280;
-  const finderHeight: number = 280;
-
-  const width = Dimensions.get('window').width;
-  const height = Dimensions.get('window').height;
-
-  const viewMinX = (width - finderWidth) / 2;
-  const viewMinY = (height - finderHeight) / 2;
 
   // QR Code Generator Stuff
   const isFocused = useIsFocused();
@@ -100,7 +92,14 @@ export default function TabThreeScreen({
     string | null | undefined
   >(null);
 
-  const [cancel, _] = useMutation(cancelBooking, {
+  const [cancel] = useMutation(cancelBooking, {
+    async onCompleted(res) {
+      await deviceStorage.delete('tableIdentifier');
+      navigation.reset({ routes: [{ name: 'TabThree' }] });
+    },
+  });
+
+  const [leave] = useMutation(endBooking, {
     async onCompleted(res) {
       await deviceStorage.delete('tableIdentifier');
       navigation.reset({ routes: [{ name: 'TabThree' }] });
@@ -108,60 +107,32 @@ export default function TabThreeScreen({
   });
 
   async function userHasQR() {
-    const identifier = await getIdentifier();
+    const identifier = await deviceStorage.get('tableIdentifier');
 
     if (identifier !== null) {
       setTableIdentifier(identifier);
       setHasQR(true);
-    } else setHasQR(false);
-
-    return hasQR;
+    } else {
+      setHasQR(false);
+    }
   }
 
+  useEffect(() => {
+    if (!toggleQR) {
+      getLibrary();
+      userHasQR();
+    }
+  }, [userHasQR, getLibrary]);
+
   // User & Table Data
+  const userData = useQuery(getCurrentUser);
   const tableData = useQuery(getTable, {
     variables: {
       identifier: tableIdentifier,
     },
   });
-  const userData = useQuery(getCurrentUser);
 
-  // QR Code Scanner & State Management Stuff
-  useEffect(() => {
-    if (!toggleQR) {
-      getLibrary;
-      userHasQR();
-    }
-    if (toggleQR) {
-      (async () => {
-        if (!userData.loading && userData.data.getCurrentUser.admin === true) {
-          const { status } = await BarCodeScanner.requestPermissionsAsync();
-          setHasPermission(status === 'granted');
-        }
-      })();
-    }
-  }, [isFocused, userHasQR, getLibrary]);
-
-  const handleBarCodeScanned = (scanningResult: BarCodeScannerResult) => {
-    if (!scanned) {
-      const { type, data, bounds: { origin } = {} } = scanningResult;
-      const { x, y }: any = origin;
-      if (
-        x >= viewMinX &&
-        y >= viewMinY &&
-        x <= viewMinX + finderWidth / 2 &&
-        y <= viewMinY + finderHeight / 2
-      ) {
-        setScanned(true);
-        console.log(
-          `Bar code with type: '${type}' and data: '${data}' has been scanned.`
-        );
-      }
-    }
-  };
-
-  // Loader
-  if (tableData.loading || userData.loading) {
+  if (userData.loading || tableData.loading) {
     return (
       <View
         style={[
@@ -176,8 +147,11 @@ export default function TabThreeScreen({
     );
   }
 
-  const userId = userData.data.getCurrentUser.id;
-  const isAdmin = userData.data.getCurrentUser.admin;
+  const user = userData.data.getCurrentUser;
+
+  const userId = user.id;
+  const isAdmin = user.admin;
+  const isLoading = userData.loading;
 
   return (
     <>
@@ -192,128 +166,36 @@ export default function TabThreeScreen({
           {hasPermission === false && (
             <ManropeText>Zugriff auf Kamera abgelehnt.</ManropeText>
           )} */}
-              <BarCodeScanner
-                onBarCodeScanned={handleBarCodeScanned}
-                type={type}
-                barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-                style={[
-                  StyleSheet.absoluteFillObject,
-                  qrScannerStyles.scanContainer,
-                ]}
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    width: '100%',
-                    backgroundColor: 'transparent',
-                    paddingHorizontal: 25,
-                    paddingTop: 5,
-                    paddingBottom: 10,
-                  }}
-                >
-                  <View style={[qrScannerStyles.settings]}>
-                    <Toggle toggle={toggleQR} setToggle={setToggleQR} />
-                    <TouchableOpacity
-                      style={[
-                        qrScannerStyles.iconBackground,
-                        {
-                          marginLeft: 10,
-                        },
-                      ]}
-                      onPress={async () => {
-                        // isn't working rn
-                        const { status } =
-                          await BarCodeScanner.requestPermissionsAsync();
-                        setHasPermission(status === 'granted');
-                      }}
-                    >
-                      <MaterialIcons
-                        name="admin-panel-settings"
-                        size={25}
-                        color={white}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <TouchableOpacity
-                    style={[
-                      qrScannerStyles.iconBackground,
-                      { height: 47, width: 47, borderRadius: 47 / 2 },
-                    ]}
-                    onPress={() => {
-                      setType(
-                        type === BarCodeScanner.Constants.Type.back
-                          ? BarCodeScanner.Constants.Type.front
-                          : BarCodeScanner.Constants.Type.back
-                      );
-                    }}
-                  >
-                    <MaterialIcons
-                      name="flip-camera-android"
-                      size={25}
-                      color={white}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <BarcodeMask
-                  edgeColor={purple100}
-                  showAnimatedLine
-                  animatedLineColor={purple100}
-                />
-
-                <Button
-                  scanButton={true}
-                  backgroundColor={purple100}
-                  onPress={() => setScanned(false)}
-                >
-                  <ManropeText bold={true} style={{ color: white }}>
-                    Erneut Scannen
-                  </ManropeText>
-                </Button>
-              </BarCodeScanner>
+              <QRScanner
+                toggleQR={toggleQR}
+                setToggleQR={setToggleQR}
+                hasPermission={hasPermission}
+                setHasPermission={setHasPermission}
+                isAdmin={isAdmin}
+                isLoading={isLoading}
+              />
             </View>
           )}
         </>
       ) : (
         <View style={containerStyle.container}>
           <UpperBody>
-            {hasQR ? (
-              <ManropeText style={headerTitleStyle.title}>
-                Erfolgreich einen Platz im
-                <ManropeText bold={true} style={headerTitleStyle.title}>
-                  {getLibrary()?.name}
-                </ManropeText>
-                gebucht!
-              </ManropeText>
+            {hasQR && isAdmin ? (
+              <QRSettingsTop
+                toggleQR={toggleQR}
+                setToggleQR={setToggleQR}
+                setHasPermission={setHasPermission}
+                style={styles.qrTop}
+              />
             ) : (
               <>
                 {isAdmin && (
-                  <View
-                    style={[
-                      qrScannerStyles.settings,
-                      {
-                        marginTop: -12.5,
-                      },
-                    ]}
-                  >
-                    <Toggle toggle={toggleQR} setToggle={setToggleQR} />
-                    <TouchableOpacity
-                      style={[
-                        qrScannerStyles.iconBackground,
-                        {
-                          marginLeft: 10,
-                        },
-                      ]}
-                      onPress={() => {}}
-                    >
-                      <MaterialIcons
-                        name="admin-panel-settings"
-                        size={25}
-                        color={white}
-                      />
-                    </TouchableOpacity>
-                  </View>
+                  <QRSettingsTop
+                    toggleQR={toggleQR}
+                    setToggleQR={setToggleQR}
+                    setHasPermission={setHasPermission}
+                    style={styles.qrTop}
+                  />
                 )}
                 <ManropeText bold={false} style={headerTitleStyle.title}>
                   Reservieren Sie sich zuerst einen Tisch in einer Bibliothek.
@@ -333,31 +215,57 @@ export default function TabThreeScreen({
             <QRCodeIcon height={500} width={300} />
           )}
           {hasQR && timerCount !== 'Zeit abgelaufen' && (
-            <Formik
-              initialValues={{}}
-              onSubmit={() => {
-                try {
-                  cancel({
-                    variables: {
-                      identifier: tableIdentifier,
-                    },
-                  });
-                } catch (error) {
-                  console.log(error);
-                }
-              }}
-            >
-              {({ handleSubmit }) => (
-                <Button
-                  onPress={() => handleSubmit()}
-                  backgroundColor={crimson80}
+            <>
+              {tableData.data.getTable.userId !== null ? (
+                <Formik
+                  initialValues={{}}
+                  onSubmit={() => {
+                    try {
+                      leave();
+                    } catch (error) {
+                      console.log(error);
+                    }
+                  }}
                 >
-                  <ManropeText bold={true} style={{ color: white }}>
-                    Reservierung Stornieren
-                  </ManropeText>
-                </Button>
+                  {({ handleSubmit }) => (
+                    <Button
+                      onPress={() => handleSubmit()}
+                      backgroundColor={crimson80}
+                    >
+                      <ManropeText bold={true} style={{ color: white }}>
+                        Reservierung Beenden
+                      </ManropeText>
+                    </Button>
+                  )}
+                </Formik>
+              ) : (
+                <Formik
+                  initialValues={{}}
+                  onSubmit={() => {
+                    try {
+                      cancel({
+                        variables: {
+                          identifier: tableIdentifier,
+                        },
+                      });
+                    } catch (error) {
+                      console.log(error);
+                    }
+                  }}
+                >
+                  {({ handleSubmit }) => (
+                    <Button
+                      onPress={() => handleSubmit()}
+                      backgroundColor={crimson80}
+                    >
+                      <ManropeText bold={true} style={{ color: white }}>
+                        Reservierung Stornieren
+                      </ManropeText>
+                    </Button>
+                  )}
+                </Formik>
               )}
-            </Formik>
+            </>
           )}
         </View>
       )}
@@ -365,30 +273,12 @@ export default function TabThreeScreen({
   );
 }
 
-const qrScannerStyles = StyleSheet.create({
-  scanContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  settings: {
+const styles = StyleSheet.create({
+  qrTop: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    backgroundColor: 'transparent',
+    height: 'auto',
     width: '100%',
-  },
-  iconBackground: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 35,
-    width: 35,
-    borderRadius: 35 / 2,
-    backgroundColor: grayTransparent,
   },
 });

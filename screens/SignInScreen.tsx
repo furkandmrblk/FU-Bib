@@ -20,8 +20,13 @@ import { Formik } from 'formik';
 import Input from '../components/Input/Input';
 import { RootStackScreenProps } from '../types';
 import { useAuth } from '../providers/Auth';
-import { containerStyle, headerTitleStyle } from './TabOneScreen';
 import { LinearGradient } from 'expo-linear-gradient';
+import {
+  containerStyle,
+  gradientStyle,
+  headerTitleStyle,
+  modalStyles,
+} from '../utils/styles';
 
 const signIn = gql`
   mutation signIn($email: String!, $password: String!) {
@@ -105,6 +110,7 @@ export const SignInScreen = ({
                   Login
                 </ManropeText>
                 <Input
+                  keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
                   onChangeText={handleChange('email')}
@@ -168,38 +174,3 @@ export const SignInScreen = ({
     </>
   );
 };
-
-export const gradientStyle = StyleSheet.create({
-  wrap: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 2,
-    borderRadius: 7,
-  },
-});
-
-export const modalStyles = StyleSheet.create({
-  modal: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: 310,
-    borderRadius: 5,
-    backgroundColor: grayTransparent,
-    paddingHorizontal: 12,
-    paddingTop: 24,
-    paddingBottom: 16,
-  },
-  modalTitle: {
-    color: black100,
-    fontSize: subtitleThree,
-    marginBottom: 20,
-  },
-  input: {
-    marginBottom: 10,
-  },
-  text: {
-    color: black100,
-    fontSize: textThree,
-  },
-});
