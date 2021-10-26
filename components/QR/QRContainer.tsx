@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View } from '../Themed';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   black80,
   crimson100,
-  crimson80,
   peach100,
   purple100,
 } from '../../constants/Colors';
-import { bodyContainerStyle } from '../Libraries/Library';
 import { ManropeText } from '../StyledText';
-import { getLibrary } from '../../utils/valueStore';
 import { TableProps } from '../../utils/types';
 import { textOne } from '../../constants/Fonts';
 import QRCode from 'react-native-qrcode-svg';
 import { reservationTimer } from '../../utils/timer';
-import deviceStorage from '../../providers/deviceStorage';
+import { bodyContainerStyle } from '../../utils/styles';
 
 interface QRProps {
   tableId: string | null | undefined;
@@ -26,7 +23,9 @@ interface QRProps {
 }
 
 async function abc() {
-  await deviceStorage.delete('tableIdentifier');
+  // await deviceStorage.delete('tableIdentifier');
+  // const test = await deviceStorage.get('tableIdentifier');
+  // console.log(test);
 }
 
 // abc();
@@ -38,7 +37,9 @@ export const QRContainer = ({
   timerCount,
   setTimerCount,
 }: QRProps) => {
-  reservationTimer(table!.time, setTimerCount);
+  useEffect(() => {
+    reservationTimer(table!.time, setTimerCount);
+  }, [reservationTimer]);
 
   return (
     <LinearGradient
@@ -52,7 +53,7 @@ export const QRContainer = ({
           bodyContainerStyle.container,
           {
             borderWidth: 0,
-            width: '98.95%',
+            width: '100%',
             marginBottom: 0,
             maxHeight: 456,
             justifyContent: 'center',
@@ -65,7 +66,7 @@ export const QRContainer = ({
         <ManropeText>{table!.library?.email}</ManropeText>
         <ManropeText>{table!.library?.website}</ManropeText>
         <ManropeText bold={true}>Tisch: {table!.identifier}</ManropeText>
-        <ManropeText style={{ marginBottom: 25 }} bold={true}>
+        <ManropeText style={{ marginBottom: 20 }} bold={true}>
           {table!.floor}
         </ManropeText>
         <QRCode
@@ -76,14 +77,14 @@ export const QRContainer = ({
 
         {timerCount === 'Zeit abgelaufen' ? (
           <ManropeText
-            style={{ marginTop: 35, fontSize: textOne, color: crimson100 }}
+            style={{ marginTop: 25, fontSize: textOne, color: crimson100 }}
             bold={true}
           >
             {timerCount}
           </ManropeText>
         ) : (
           <ManropeText
-            style={{ marginTop: 35, fontSize: textOne, color: black80 }}
+            style={{ marginTop: 25, fontSize: textOne, color: black80 }}
             bold={true}
           >
             {timerCount}
