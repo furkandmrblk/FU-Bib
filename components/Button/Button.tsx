@@ -34,7 +34,7 @@ const Button = ({
       justifyContent: 'center',
       width: width ? width : '100%',
       paddingHorizontal: 7,
-      paddingVertical: scanButton ? 20 : 15,
+      paddingVertical: 15,
     },
   });
 

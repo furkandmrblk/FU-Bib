@@ -14,7 +14,7 @@ import { LibraryProps } from '../../utils/types';
 import { ManropeText } from '../StyledText';
 import { View } from '../Themed';
 import { LinearGradient } from 'expo-linear-gradient';
-import { gradientStyle } from '../../screens/SignInScreen';
+import { gradientStyle } from '../../utils/styles';
 
 type DropdownProps = {
   open: boolean;
@@ -38,7 +38,7 @@ export const Dropdown = (props: DropdownProps) => {
       maxHeight: 290,
       backgroundColor: gray80,
       borderRadius: 5,
-      maxWidth: '100%',
+      width: '100%',
 
       paddingHorizontal: Platform.OS == 'ios' ? 0 : 6,
       paddingVertical: 8,

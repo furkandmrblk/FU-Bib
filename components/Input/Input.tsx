@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TextInput as DefaultInput } from 'react-native';
-import { black80, gray80, purple100 } from '../../constants/Colors';
+import { black80, gray80, peach100, purple100 } from '../../constants/Colors';
 import { textTwo } from '../../constants/Fonts';
 
 type ThemeProps = {
@@ -35,7 +35,13 @@ const Input = ({ ...props }: InputProps) => {
     },
   });
 
-  return <DefaultInput style={[styles.container]} {...props} />;
+  return (
+    <DefaultInput
+      selectionColor={peach100}
+      style={[styles.container]}
+      {...props}
+    />
+  );
 };
 
 export default Input;
