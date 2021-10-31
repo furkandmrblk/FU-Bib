@@ -25,6 +25,7 @@ export const peach60: string = '#FE8F8F';
 
 // Secondary Colors
 
+export const greenTransparent: string = 'rgba(10, 205, 30, 0.175)';
 export const emerald100: string = '#138900';
 export const emerald80: string = '#41B82D';
 

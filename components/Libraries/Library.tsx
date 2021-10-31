@@ -1,6 +1,12 @@
 import { gql, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
   crimson100,
@@ -117,46 +123,34 @@ export const Library = ({ library, pickedTable, setPickedTable }: LibProps) => {
       colors={[purple100, peach100]}
       style={bodyContainerStyle.wrap}
     >
-      <View
-        style={[
-          bodyContainerStyle.container,
-          { width: '100%', marginBottom: 0, maxHeight: 456 },
-        ]}
-      >
-        <ScrollView
-          contentContainerStyle={{
-            width: '100%',
-            paddingLeft: 15,
-            paddingRight: Platform.OS === 'ios' ? 5 : 20,
-          }}
+      {!libraryData.loading && libraryData.data && (
+        <View
+          style={[
+            bodyContainerStyle.container,
+            { width: '100%', marginBottom: 0, maxHeight: 456 },
+          ]}
         >
-          {/* ERDGESCHOSS */}
-          {currentLibrary.floor!.includes('EG') && (
-            <ManropeText bold={true} style={bodyTitleStyle.bodyTitle}>
-              Erdgeschoss :
-            </ManropeText>
-          )}
-          <View style={styles.tableContainer}>
-            {currentLibrary
-              .table!.slice()
-              .sort((a, b) => a.order - b.order)
-              .map((table: TableProps, index: number) => (
-                <View key={index}>
-                  {table.floor === 'EG' && (
-                    <View
-                      style={[
-                        styles.table,
-                        {
-                          borderColor: table.booked ? crimson100 : emerald80,
-                          backgroundColor: table.booked
-                            ? peach60
-                            : pickedTable.identifier === table.identifier
-                            ? pickedTable.background
-                            : gray80,
-                        },
-                      ]}
-                    >
-                      <ManropeText
+          <ScrollView
+            contentContainerStyle={{
+              width: '100%',
+              paddingLeft: 15,
+              paddingRight: Platform.OS === 'ios' ? 5 : 20,
+            }}
+          >
+            {/* ERDGESCHOSS */}
+            {currentLibrary.floor!.includes('EG') && (
+              <ManropeText bold={true} style={bodyTitleStyle.bodyTitle}>
+                Erdgeschoss :
+              </ManropeText>
+            )}
+            <View style={styles.tableContainer}>
+              {currentLibrary
+                .table!.slice()
+                .sort((a, b) => a.order - b.order)
+                .map((table: TableProps, index: number) => (
+                  <View key={index}>
+                    {table.floor === 'EG' && (
+                      <Pressable
                         onPress={() => {
                           if (!table.booked) {
                             setPickedTable({
@@ -165,54 +159,105 @@ export const Library = ({ library, pickedTable, setPickedTable }: LibProps) => {
                             });
                           }
                         }}
+                        style={[
+                          styles.table,
+                          {
+                            borderColor: table.booked ? crimson100 : emerald80,
+                            backgroundColor: table.booked
+                              ? peach60
+                              : pickedTable.identifier === table.identifier
+                              ? pickedTable.background
+                              : gray80,
+                          },
+                        ]}
                       >
-                        {table.identifier}
-                      </ManropeText>
+                        <ManropeText>{table.identifier}</ManropeText>
+                      </Pressable>
+                    )}
+                  </View>
+                ))}
+            </View>
+            {/* 1. OBERGESCHOSS */}
+            {currentLibrary.floor!.includes('1.OG') && (
+              <ManropeText
+                bold={true}
+                style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+              >
+                1. Obergeschoss :
+              </ManropeText>
+            )}
+            <View style={styles.tableContainer}>
+              {currentLibrary
+                .table!.slice()
+                .sort((a, b) => a.order - b.order)
+                .map(
+                  (
+                    table: {
+                      id: string;
+                      booked: boolean;
+                      floor: string;
+                      identifier: string;
+                    },
+                    index: number
+                  ) => (
+                    <View key={index + 100}>
+                      {table.floor === '1.OG' && (
+                        <Pressable
+                          onPress={() => {
+                            if (!table.booked) {
+                              setPickedTable({
+                                identifier: table.identifier,
+                                background: emerald80,
+                              });
+                            }
+                          }}
+                          style={[
+                            styles.table,
+                            {
+                              borderColor: table.booked
+                                ? crimson100
+                                : emerald80,
+                              backgroundColor: table.booked
+                                ? peach60
+                                : pickedTable.identifier === table.identifier
+                                ? pickedTable.background
+                                : gray80,
+                            },
+                          ]}
+                        >
+                          <ManropeText>{table.identifier}</ManropeText>
+                        </Pressable>
+                      )}
                     </View>
-                  )}
-                </View>
-              ))}
-          </View>
-          {/* 1. OBERGESCHOSS */}
-          {currentLibrary.floor!.includes('1.OG') && (
-            <ManropeText
-              bold={true}
-              style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
-            >
-              1. Obergeschoss :
-            </ManropeText>
-          )}
-          <View style={styles.tableContainer}>
-            {currentLibrary
-              .table!.slice()
-              .sort((a, b) => a.order - b.order)
-              .map(
-                (
-                  table: {
-                    id: string;
-                    booked: boolean;
-                    floor: string;
-                    identifier: string;
-                  },
-                  index: number
-                ) => (
-                  <View key={index + 100}>
-                    {table.floor === '1.OG' && (
-                      <View
-                        key={index + 100}
-                        style={[
-                          styles.table,
-                          {
-                            borderColor: table.booked ? crimson100 : emerald80,
-                            backgroundColor: table.booked
-                              ? peach60
-                              : pickedTable.identifier === table.identifier
-                              ? pickedTable.background
-                              : gray80,
-                          },
-                        ]}
-                      >
-                        <ManropeText
+                  )
+                )}
+            </View>
+            {/* 2. OBERGESCHOSS */}
+            {currentLibrary.floor!.includes('2.OG') && (
+              <ManropeText
+                bold={true}
+                style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+              >
+                2. Obergeschoss :
+              </ManropeText>
+            )}
+            <View style={styles.tableContainer}>
+              {currentLibrary
+                .table!.slice()
+                .sort((a, b) => a.order - b.order)
+                .map(
+                  (
+                    table: {
+                      id: string;
+                      booked: boolean;
+                      floor: string;
+                      identifier: string;
+                    },
+                    index: number
+                  ) => (
+                    <View key={index + 200}>
+                      {table.floor === '2.OG' && (
+                        <Pressable
                           onPress={() => {
                             if (!table.booked) {
                               setPickedTable({
@@ -221,55 +266,53 @@ export const Library = ({ library, pickedTable, setPickedTable }: LibProps) => {
                               });
                             }
                           }}
+                          style={[
+                            styles.table,
+                            {
+                              borderColor: table.booked
+                                ? crimson100
+                                : emerald80,
+                              backgroundColor: table.booked
+                                ? peach60
+                                : pickedTable.identifier === table.identifier
+                                ? pickedTable.background
+                                : gray80,
+                            },
+                          ]}
                         >
-                          {table.identifier}
-                        </ManropeText>
-                      </View>
-                    )}
-                  </View>
-                )
-              )}
-          </View>
-          {/* 2. OBERGESCHOSS */}
-          {currentLibrary.floor!.includes('2.OG') && (
-            <ManropeText
-              bold={true}
-              style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
-            >
-              2. Obergeschoss :
-            </ManropeText>
-          )}
-          <View style={styles.tableContainer}>
-            {currentLibrary
-              .table!.slice()
-              .sort((a, b) => a.order - b.order)
-              .map(
-                (
-                  table: {
-                    id: string;
-                    booked: boolean;
-                    floor: string;
-                    identifier: string;
-                  },
-                  index: number
-                ) => (
-                  <View key={index + 100}>
-                    {table.floor === '2.OG' && (
-                      <View
-                        key={index + 100}
-                        style={[
-                          styles.table,
-                          {
-                            borderColor: table.booked ? crimson100 : emerald80,
-                            backgroundColor: table.booked
-                              ? peach60
-                              : pickedTable.identifier === table.identifier
-                              ? pickedTable.background
-                              : gray80,
-                          },
-                        ]}
-                      >
-                        <ManropeText
+                          <ManropeText>{table.identifier}</ManropeText>
+                        </Pressable>
+                      )}
+                    </View>
+                  )
+                )}
+            </View>
+            {/* 3. OBERGESCHOSS */}
+            {currentLibrary.floor!.includes('3.OG') && (
+              <ManropeText
+                bold={true}
+                style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
+              >
+                3. Obergeschoss :
+              </ManropeText>
+            )}
+            <View style={styles.tableContainer}>
+              {currentLibrary
+                .table!.slice()
+                .sort((a, b) => a.order - b.order)
+                .map(
+                  (
+                    table: {
+                      id: string;
+                      booked: boolean;
+                      floor: string;
+                      identifier: string;
+                    },
+                    index: number
+                  ) => (
+                    <View key={index + 300}>
+                      {table.floor === '3.OG' && (
+                        <Pressable
                           onPress={() => {
                             if (!table.booked) {
                               setPickedTable({
@@ -278,74 +321,30 @@ export const Library = ({ library, pickedTable, setPickedTable }: LibProps) => {
                               });
                             }
                           }}
+                          style={[
+                            styles.table,
+                            {
+                              borderColor: table.booked
+                                ? crimson100
+                                : emerald80,
+                              backgroundColor: table.booked
+                                ? peach60
+                                : pickedTable.identifier === table.identifier
+                                ? pickedTable.background
+                                : gray80,
+                            },
+                          ]}
                         >
-                          {table.identifier}
-                        </ManropeText>
-                      </View>
-                    )}
-                  </View>
-                )
-              )}
-          </View>
-          {/* 3. OBERGESCHOSS */}
-          {currentLibrary.floor!.includes('3.OG') && (
-            <ManropeText
-              bold={true}
-              style={[bodyTitleStyle.bodyTitle, { marginTop: 10 }]}
-            >
-              3. Obergeschoss :
-            </ManropeText>
-          )}
-          <View style={styles.tableContainer}>
-            {currentLibrary
-              .table!.slice()
-              .sort((a, b) => a.order - b.order)
-              .map(
-                (
-                  table: {
-                    id: string;
-                    booked: boolean;
-                    floor: string;
-                    identifier: string;
-                  },
-                  index: number
-                ) => (
-                  <View key={index + 200}>
-                    {table.floor === '3.OG' && (
-                      <View
-                        key={index + 200}
-                        style={[
-                          styles.table,
-                          {
-                            borderColor: table.booked ? crimson100 : emerald80,
-                            backgroundColor: table.booked
-                              ? peach60
-                              : pickedTable.identifier === table.identifier
-                              ? pickedTable.background
-                              : gray80,
-                          },
-                        ]}
-                      >
-                        <ManropeText
-                          onPress={() => {
-                            if (!table.booked) {
-                              setPickedTable({
-                                identifier: table.identifier,
-                                background: emerald80,
-                              });
-                            }
-                          }}
-                        >
-                          {table.identifier}
-                        </ManropeText>
-                      </View>
-                    )}
-                  </View>
-                )
-              )}
-          </View>
-        </ScrollView>
-      </View>
+                          <ManropeText>{table.identifier}</ManropeText>
+                        </Pressable>
+                      )}
+                    </View>
+                  )
+                )}
+            </View>
+          </ScrollView>
+        </View>
+      )}
     </LinearGradient>
   );
 };

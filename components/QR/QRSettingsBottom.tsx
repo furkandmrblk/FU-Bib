@@ -15,10 +15,12 @@ export const QRSettingsBottom = ({ setScanned }: QRSettingsBottomProps) => {
       <Button
         scanButton={true}
         backgroundColor={purple100}
-        onPress={() => setScanned(false)}
+        onPress={() => {
+          setScanned(false);
+        }}
       >
         <ManropeText bold={true} style={{ color: white }}>
-          Erneut Scannen
+          Scannen
         </ManropeText>
       </Button>
     </View>

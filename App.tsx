@@ -8,7 +8,6 @@ import { AuthProvider } from './providers/Auth';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
-  const colorScheme = useColorScheme();
 
   if (!isLoadingComplete) {
     return null;
@@ -16,7 +15,7 @@ export default function App() {
     return (
       <AuthProvider>
         <SafeAreaProvider>
-          <Navigation colorScheme={colorScheme} />
+          <Navigation />
           <StatusBar />
         </SafeAreaProvider>
       </AuthProvider>
