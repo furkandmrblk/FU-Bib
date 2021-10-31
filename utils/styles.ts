@@ -1,6 +1,12 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { black100, grayTransparent } from '../constants/Colors';
+import {
+  black100,
+  emerald100,
+  emerald80,
+  grayTransparent,
+  greenTransparent,
+} from '../constants/Colors';
 import { subtitleThree, textThree, textTwo } from '../constants/Fonts';
 
 // Gradient
@@ -58,6 +64,7 @@ export const bodyContainerStyle = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
+
     maxHeight: 470,
     backgroundColor: grayTransparent,
     borderRadius: 5,
@@ -75,6 +82,19 @@ export const bodyContainerStyle = StyleSheet.create({
 
     borderRadius: 7,
     marginBottom: 10,
+  },
+});
+
+export const validatedContainerStyle = StyleSheet.create({
+  container: {
+    width: '90%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: greenTransparent,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: emerald100,
+    padding: 15,
   },
 });
 
@@ -142,5 +162,21 @@ export const qrScannerStyles = StyleSheet.create({
     width: 35,
     borderRadius: 35 / 2,
     backgroundColor: grayTransparent,
+  },
+});
+
+// QR-PopUp
+
+export const qrPopUpStyles = StyleSheet.create({
+  popUp: {
+    position: 'absolute',
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    backgroundColor: emerald80,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginBottom: 80,
   },
 });
