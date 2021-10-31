@@ -1,18 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from '../Themed';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   black80,
   crimson100,
+  emerald100,
+  emerald80,
   peach100,
   purple100,
 } from '../../constants/Colors';
 import { ManropeText } from '../StyledText';
 import { TableProps } from '../../utils/types';
-import { textOne } from '../../constants/Fonts';
+import { textOne, textThree } from '../../constants/Fonts';
 import QRCode from 'react-native-qrcode-svg';
-import { reservationTimer } from '../../utils/timer';
-import { bodyContainerStyle } from '../../utils/styles';
+import { useTimer } from '../../utils/timer';
+import {
+  bodyContainerStyle,
+  validatedContainerStyle,
+} from '../../utils/styles';
+import { gql, useMutation } from '@apollo/client';
+import deviceStorage from '../../providers/deviceStorage';
+import { useNavigation } from '@react-navigation/core';
+import { endBooking } from '../../screens/TabTwoScreen';
+import ValidatedIcon from '../../assets/images/ValidatedIcon';
 
 interface QRProps {
   tableId: string | null | undefined;
@@ -22,13 +32,14 @@ interface QRProps {
   setTimerCount: React.Dispatch<React.SetStateAction<string | number | null>>;
 }
 
-async function abc() {
-  // await deviceStorage.delete('tableIdentifier');
-  // const test = await deviceStorage.get('tableIdentifier');
-  // console.log(test);
-}
-
-// abc();
+const strikeUser = gql`
+  mutation strikeUser {
+    strikeUser {
+      id
+      strikes
+    }
+  }
+`;
 
 export const QRContainer = ({
   table,
@@ -37,9 +48,34 @@ export const QRContainer = ({
   timerCount,
   setTimerCount,
 }: QRProps) => {
+  const navigation = useNavigation();
+  const [warnUser, setWarnUser] = useState<string | null>(null);
+  const [strike] = useMutation(strikeUser);
+  const [leave] = useMutation(endBooking);
+
+  const now = new Date().getTime();
+
+  useTimer(table!.time, setTimerCount);
+
   useEffect(() => {
-    reservationTimer(table!.time, setTimerCount);
-  }, [reservationTimer]);
+    // BESSERES STATE MANAGEMENT
+    if (now >= table!.time && table!.extendedTime === false) {
+      setWarnUser(
+        'Sie haben einen Strike erhalten, da Sie nicht zur Bibliothek erschienen sind. Bei insgesamt 3 Strikes wird Ihr Account gesperrt.'
+      );
+
+      setTimeout(async () => {
+        strike();
+        await deviceStorage.delete('tableIdentifier');
+      }, 5000);
+    }
+    if (now >= table!.time && table!.extendedTime === true) {
+      setTimeout(async () => {
+        leave();
+        await deviceStorage.delete('tableIdentifier');
+      }, 5000);
+    }
+  }, [now]);
 
   return (
     <LinearGradient
@@ -69,19 +105,56 @@ export const QRContainer = ({
         <ManropeText style={{ marginBottom: 20 }} bold={true}>
           {table!.floor}
         </ManropeText>
-        <QRCode
-          value={`${userId};${tableId}`}
-          backgroundColor="transparent"
-          size={225}
-        />
+        {table!.extendedTime && table!.userId !== null ? (
+          <View style={validatedContainerStyle.container}>
+            <ManropeText
+              style={{
+                color: emerald100,
+                textAlign: 'center',
+                marginBottom: 30,
+              }}
+              bold={true}
+            >
+              Deine Reservierung wurde erfolgreich validiert. Viel Erfolg beim
+              lernen!
+            </ManropeText>
+            <ValidatedIcon height={100} width={160} />
+          </View>
+        ) : (
+          <>
+            {userId !== null || tableId !== null ? (
+              <QRCode
+                value={`${userId};${tableId}`}
+                backgroundColor="transparent"
+                size={225}
+              />
+            ) : null}
+          </>
+        )}
 
         {timerCount === 'Zeit abgelaufen' ? (
-          <ManropeText
-            style={{ marginTop: 25, fontSize: textOne, color: crimson100 }}
-            bold={true}
-          >
-            {timerCount}
-          </ManropeText>
+          <>
+            <ManropeText
+              style={{ marginTop: 10, fontSize: textOne, color: crimson100 }}
+              bold={true}
+            >
+              {timerCount}
+            </ManropeText>
+            {warnUser && (
+              <ManropeText
+                style={{
+                  marginTop: 5,
+                  fontSize: textThree,
+                  textAlign: 'center',
+                  color: crimson100,
+                  maxWidth: 275,
+                }}
+                bold={true}
+              >
+                {warnUser}
+              </ManropeText>
+            )}
+          </>
         ) : (
           <ManropeText
             style={{ marginTop: 25, fontSize: textOne, color: black80 }}

@@ -5,10 +5,12 @@ import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import { MaterialIcons } from '@expo/vector-icons';
 import BarcodeMask from 'react-native-barcode-mask';
 import { QRSettingsTop } from './QRSettingsTop';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { QRSettingsBottom } from './QRSettingsBottom';
-import { qrScannerStyles } from '../../utils/styles';
-import { purple100, white } from '../../constants/Colors';
+import { qrPopUpStyles, qrScannerStyles } from '../../utils/styles';
+import { crimson80, emerald80, purple100, white } from '../../constants/Colors';
+import { ManropeText } from '../StyledText';
+import { textThree } from '../../constants/Fonts';
 
 const validateBooking = gql`
   mutation validateBooking($userId: String!, $tableIdentifier: String!) {
@@ -51,8 +53,14 @@ export const QRScanner = ({
 }: QRScannerProps) => {
   const [scanned, setScanned] = useState<boolean>(false);
   const [type, setType] = useState<any>(BarCodeScanner.Constants.Type.back);
+  const [popUp, setPopUp] = useState<{
+    scanned: boolean;
+    success: boolean;
+  } | null>(null);
+
   const [userId, setUserId] = useState<string | null>(null);
   const [tableIdentifier, setTableIdentifier] = useState<string | null>(null);
+
   const [error, setError] = useState<string | null>(null);
 
   const [validate, _] = useMutation(validateBooking, {
@@ -65,15 +73,6 @@ export const QRScanner = ({
     },
   });
 
-  const finderWidth: number = 280;
-  const finderHeight: number = 230;
-
-  const width = Dimensions.get('window').width;
-  const height = Dimensions.get('window').height;
-
-  const viewMinX = (width - finderWidth) / 2;
-  const viewMinY = (height - finderHeight) / 2;
-
   useEffect(() => {
     if (toggleQR) {
       (async () => {
@@ -83,39 +82,36 @@ export const QRScanner = ({
         }
       })();
     }
-  }, []);
+  }, [toggleQR]);
 
   const handleBarCodeScanned = async (scanningResult: BarCodeScannerResult) => {
     if (!scanned) {
       const { type, data, bounds: { origin } = {} } = scanningResult;
-      const { x, y }: any = origin;
-      if (
-        x >= viewMinX &&
-        y >= viewMinY &&
-        x <= viewMinX + finderWidth / 2 &&
-        y <= viewMinY + finderHeight / 2
-      ) {
-        setScanned(true);
-        const qrValue: string[] = data.split(';');
-        setUserId(qrValue[0]);
-        setTableIdentifier(qrValue[1]);
 
-        if (userId && tableIdentifier !== null) {
-          console.log(
-            `Bar code with type: '${type}' and data: '${data}' has been scanned.`
-          );
+      const qrValue: string[] = data.split(';');
+      setUserId(qrValue[0]);
+      setTableIdentifier(qrValue[1]);
 
-          try {
-            await validate({
-              variables: {
-                userId: userId,
-                tableIdentifier: tableIdentifier,
-              },
-            });
-          } catch (error) {
-            console.log(error);
-          }
+      if (userId !== null && tableIdentifier !== null) {
+        try {
+          await validate({
+            variables: {
+              userId: userId,
+              tableIdentifier: tableIdentifier,
+            },
+          });
+          setScanned(true);
+          setPopUp({ scanned: true, success: true });
+          console.log('scanned');
+        } catch (error) {
+          console.log(error);
         }
+
+        setTimeout(() => {
+          setPopUp({ scanned: false, success: true });
+        }, 1000);
+      } else {
+        setPopUp({ scanned: true, success: false });
       }
     }
   };
@@ -158,6 +154,20 @@ export const QRScanner = ({
             <MaterialIcons name="flip-camera-android" size={25} color={white} />
           </TouchableOpacity>
         </BarCodeScanner>
+        {popUp?.success && popUp.scanned && (
+          <View style={qrPopUpStyles.popUp}>
+            <ManropeText style={{ fontSize: textThree, color: white }}>
+              erfolgreich gescanned
+            </ManropeText>
+          </View>
+        )}
+        {!popUp?.success && popUp?.scanned && (
+          <View style={[qrPopUpStyles.popUp, { backgroundColor: crimson80 }]}>
+            <ManropeText style={{ fontSize: textThree, color: white }}>
+              bereits gescanned
+            </ManropeText>
+          </View>
+        )}
       </View>
       <QRSettingsBottom setScanned={setScanned} />
     </>
