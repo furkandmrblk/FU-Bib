@@ -25,6 +25,8 @@ export type TableProps = {
   floor: string;
   booked: boolean;
   time: number;
+  extendedTime?: boolean;
+  userId?: string;
   library?: {
     name: string;
     adress: string;
