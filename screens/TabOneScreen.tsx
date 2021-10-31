@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import { Header } from '../components/Header/Header';
 import { View } from '../components/Themed';
 import { ManropeText } from '../components/StyledText';
@@ -13,6 +19,7 @@ import {
   gray80,
   purple100,
   peach100,
+  white,
 } from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { Dropdown } from '../components/Dropdown/Dropdown';
@@ -21,6 +28,26 @@ import LibIcon from '../assets/images/LibIcon';
 import { gql, useQuery } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
 import { containerStyle, headerTitleStyle } from '../utils/styles';
+import { refresh } from '../utils/refresh';
+
+export const getTable = gql`
+  query getTable($identifier: String!) {
+    getTable(identifier: $identifier) {
+      id
+      identifier
+      library {
+        name
+        adress
+        email
+        website
+      }
+      floor
+      userId
+      time
+      extendedTime
+    }
+  }
+`;
 
 const getLibraries = gql`
   query getLibraries {
@@ -38,50 +65,61 @@ const getLibraries = gql`
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<'TabOne'>) {
+  const { onRefresh, refreshing } = refresh('TabOne');
+
   const [openLibraries, setOpenLibraries] = useState<boolean>(false);
   const libraryData = useQuery(getLibraries);
 
   return (
     <>
       <Header />
-      <View style={containerStyle.container}>
-        <UpperBody>
-          <ManropeText style={headerTitleStyle.title}>
-            Wählen Sie eine Bibliothek aus:
-          </ManropeText>
-          <Pressable onPress={() => setOpenLibraries(!openLibraries)}>
-            <LinearGradient
-              start={[1, 0]}
-              end={[0, 1]}
-              colors={[purple100, peach100]}
-              style={styles.inputWrap}
-            >
-              <View style={styles.input}>
-                <Input
-                  value={getLibrary()?.name}
-                  placeholder="Bibliothek auswählen"
-                  pointerEvents="none"
-                  dropDown={true}
-                  editable={false}
-                />
+      <ScrollView
+        style={{ backgroundColor: white }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {!libraryData.loading && libraryData.data && (
+          <View style={[containerStyle.container, { minHeight: '100%' }]}>
+            <UpperBody>
+              <ManropeText style={headerTitleStyle.title}>
+                Wählen Sie eine Bibliothek aus:
+              </ManropeText>
+              <Pressable onPress={() => setOpenLibraries(!openLibraries)}>
+                <LinearGradient
+                  start={[1, 0]}
+                  end={[0, 1]}
+                  colors={[purple100, peach100]}
+                  style={styles.inputWrap}
+                >
+                  <View style={styles.input}>
+                    <Input
+                      value={getLibrary()?.name}
+                      placeholder="Bibliothek auswählen"
+                      pointerEvents="none"
+                      dropDown={true}
+                      editable={false}
+                    />
 
-                <Ionicons name="chevron-down" size={22} color={black80} />
-              </View>
-            </LinearGradient>
-            {!libraryData.loading && (
-              <Dropdown
-                open={openLibraries}
-                setOpen={setOpenLibraries}
-                items={libraryData.data.getLibraries}
-                chooseLibrary={true}
-              />
+                    <Ionicons name="chevron-down" size={22} color={black80} />
+                  </View>
+                </LinearGradient>
+                {!libraryData.loading && (
+                  <Dropdown
+                    open={openLibraries}
+                    setOpen={setOpenLibraries}
+                    items={libraryData.data.getLibraries}
+                    chooseLibrary={true}
+                  />
+                )}
+              </Pressable>
+            </UpperBody>
+            {!openLibraries && (
+              <LibIcon dropdown={openLibraries} height={400} width={300} />
             )}
-          </Pressable>
-        </UpperBody>
-        {!openLibraries && (
-          <LibIcon dropdown={openLibraries} height={400} width={300} />
+          </View>
         )}
-      </View>
+      </ScrollView>
     </>
   );
 }

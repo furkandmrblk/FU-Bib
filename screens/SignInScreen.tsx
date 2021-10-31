@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { gql, useApolloClient, useMutation } from '@apollo/client';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, RefreshControl, StyleSheet } from 'react-native';
 import { UpperBody } from '../components/Body/UpperBody';
 import Button from '../components/Button/Button';
 import { Header } from '../components/Header/Header';
@@ -27,6 +27,8 @@ import {
   headerTitleStyle,
   modalStyles,
 } from '../utils/styles';
+import { ScrollView } from 'react-native-gesture-handler';
+import { refresh } from '../utils/refresh';
 
 const signIn = gql`
   mutation signIn($email: String!, $password: String!) {
@@ -58,6 +60,8 @@ export const SignInScreen = ({
   const { setAuthenticated } = useAuth();
   const [error, setError] = useState<string | string[] | null>(null);
 
+  const { onRefresh, refreshing } = refresh('SignIn');
+
   const [login, _] = useMutation(signIn, {
     async onCompleted(res) {
       await client.resetStore();
@@ -78,99 +82,109 @@ export const SignInScreen = ({
   return (
     <>
       <Header />
-      <View style={containerStyle.container}>
-        <UpperBody>
-          <ManropeText style={headerTitleStyle.title}>
-            Melde dich an und reserviere dir einen Platz in eine der vielen
-            Bibliotheken der Freien Universität Berlins.
-          </ManropeText>
-          <PatternLeft one={true} />
-        </UpperBody>
-        <LinearGradient
-          start={[1, 0]}
-          end={[0, 1]}
-          colors={[purple100, peach100]}
-          style={gradientStyle.wrap}
-        >
-          <Formik
-            initialValues={{ email: '', password: '' }}
-            onSubmit={(values) => {
-              try {
-                login({
-                  variables: { email: values.email, password: values.password },
-                });
-              } catch (error) {
-                console.log(error);
-              }
-            }}
+      <ScrollView
+        style={{ backgroundColor: white }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={containerStyle.container}>
+          <UpperBody>
+            <ManropeText style={headerTitleStyle.title}>
+              Melde dich an und reserviere dir einen Platz in eine der vielen
+              Bibliotheken der Freien Universität Berlins.
+            </ManropeText>
+            <PatternLeft one={true} />
+          </UpperBody>
+          <LinearGradient
+            start={[1, 0]}
+            end={[0, 1]}
+            colors={[purple100, peach100]}
+            style={gradientStyle.wrap}
           >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
-              <View style={modalStyles.modal}>
-                <ManropeText style={modalStyles.modalTitle} bold={true}>
-                  Login
-                </ManropeText>
-                <Input
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                  placeholder="Email"
-                />
-                <Input
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  secureTextEntry={true}
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
-                  placeholder="Passwort"
-                />
-                {error && (
-                  <ManropeText
-                    style={{
-                      textAlign: 'center',
-                      fontSize: textThree,
-                      color: crimson100,
-                      marginBottom: 10,
-                    }}
-                  >
-                    {error}
-                  </ManropeText>
-                )}
-
-                <Button onPress={() => handleSubmit()}>
-                  <ManropeText style={{ color: white }} bold={true}>
+            <Formik
+              initialValues={{ email: '', password: '' }}
+              onSubmit={(values) => {
+                try {
+                  login({
+                    variables: {
+                      email: values.email,
+                      password: values.password,
+                    },
+                  });
+                } catch (error) {
+                  console.log(error);
+                }
+              }}
+            >
+              {({ handleChange, handleBlur, handleSubmit, values }) => (
+                <View style={modalStyles.modal}>
+                  <ManropeText style={modalStyles.modalTitle} bold={true}>
                     Login
                   </ManropeText>
-                </Button>
-                <View
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    width: '100%',
-                    backgroundColor: 'rgba(255,255,255,0)',
-                    marginTop: 7.5,
-                  }}
-                >
-                  <ManropeText style={modalStyles.text}>
-                    Kein Account?{' '}
+                  <Input
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                    placeholder="Email"
+                  />
+                  <Input
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    secureTextEntry={true}
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                    placeholder="Passwort"
+                  />
+                  {error && (
                     <ManropeText
-                      bold={true}
-                      style={{ textDecorationLine: 'underline' }}
-                      onPress={() => navigation.navigate('SignUp')}
+                      style={{
+                        textAlign: 'center',
+                        fontSize: textThree,
+                        color: crimson100,
+                        marginBottom: 10,
+                      }}
                     >
-                      Hier registrieren.
+                      {error}
                     </ManropeText>
-                  </ManropeText>
+                  )}
+
+                  <Button onPress={() => handleSubmit()}>
+                    <ManropeText style={{ color: white }} bold={true}>
+                      Login
+                    </ManropeText>
+                  </Button>
+                  <View
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-end',
+                      width: '100%',
+                      backgroundColor: 'rgba(255,255,255,0)',
+                      marginTop: 7.5,
+                    }}
+                  >
+                    <ManropeText style={modalStyles.text}>
+                      Kein Account?{' '}
+                      <ManropeText
+                        bold={true}
+                        style={{ textDecorationLine: 'underline' }}
+                        onPress={() => navigation.navigate('SignUp')}
+                      >
+                        Hier registrieren.
+                      </ManropeText>
+                    </ManropeText>
+                  </View>
                 </View>
-              </View>
-            )}
-          </Formik>
-        </LinearGradient>
-        <PatternLeft left={true} />
-      </View>
+              )}
+            </Formik>
+          </LinearGradient>
+          <PatternLeft left={true} />
+        </View>
+      </ScrollView>
     </>
   );
 };

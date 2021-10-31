@@ -5,7 +5,14 @@ import { Header } from '../components/Header/Header';
 import { Library } from '../components/Libraries/Library';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import { crimson100, gray80, white } from '../constants/Colors';
+import {
+  crimson100,
+  emerald100,
+  emerald80,
+  gray80,
+  purple100,
+  white,
+} from '../constants/Colors';
 import { RootTabScreenProps } from '../types';
 import { getLibrary } from '../utils/valueStore';
 import ChooseLibIcon2 from '../assets/images/ChooseLibIcon2';
@@ -15,6 +22,20 @@ import { gql, useMutation } from '@apollo/client';
 import { Formik } from 'formik';
 import { textThree } from '../constants/Fonts';
 import { containerStyle, headerTitleStyle } from '../utils/styles';
+import { refresh } from '../utils/refresh';
+import { RefreshControl, ScrollView } from 'react-native';
+
+export const endBooking = gql`
+  mutation endBooking {
+    endBooking {
+      id
+      identifier
+      userId
+      booked
+      time
+    }
+  }
+`;
 
 const bookTable = gql`
   mutation bookTable($identifier: String!) {
@@ -39,6 +60,8 @@ const bookTable = gql`
 export default function TabTwoScreen({
   navigation,
 }: RootTabScreenProps<'TabTwo'>) {
+  const { onRefresh, refreshing } = refresh('TabTwo');
+
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -60,6 +83,7 @@ export default function TabTwoScreen({
         setError(res.bookTable.message!);
       } else {
         setError(null);
+        await deviceStorage.set('tableIdentifier', pickedTable.identifier!);
         navigation.navigate('TabThree');
       }
     },
@@ -68,85 +92,87 @@ export default function TabTwoScreen({
   return (
     <>
       <Header />
-      <View style={containerStyle.container}>
-        <UpperBody>
-          {getLibrary() !== undefined ? (
-            <ManropeText style={headerTitleStyle.title}>
-              Wählen Sie sich einen Tisch im{' '}
-              <ManropeText bold={true}>{getLibrary()?.name}</ManropeText> aus.
-            </ManropeText>
-          ) : (
-            <ManropeText style={headerTitleStyle.title}>
-              Bitte wählen Sie{' '}
-              <ManropeText
-                onPress={() => navigation.navigate('TabOne')}
-                style={{ textDecorationLine: 'underline' }}
-                bold={true}
-              >
-                hier
-              </ManropeText>{' '}
-              zunächst eine Bibliothek aus.
-            </ManropeText>
-          )}
-        </UpperBody>
-        {getLibrary() !== undefined && (
-          <>
-            <Library
-              pickedTable={pickedTable}
-              setPickedTable={setPickedTable}
-              library={getLibrary()}
-            />
-            {error && (
-              <ManropeText
-                style={{
-                  textAlign: 'center',
-                  fontSize: textThree,
-                  color: crimson100,
-                  marginBottom: 5,
-                }}
-              >
-                {error}
+      <ScrollView
+        style={{ backgroundColor: white }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={containerStyle.container}>
+          <UpperBody>
+            {getLibrary() ? (
+              <ManropeText style={headerTitleStyle.title}>
+                Wählen Sie sich einen Tisch im &nbsp;
+                <ManropeText bold={true}>{getLibrary()?.name}</ManropeText> aus.
+              </ManropeText>
+            ) : (
+              <ManropeText style={headerTitleStyle.title}>
+                Bitte wählen Sie &nbsp;
+                <ManropeText
+                  onPress={() => navigation.navigate('TabOne')}
+                  style={{ textDecorationLine: 'underline', color: purple100 }}
+                  bold={true}
+                >
+                  hier
+                </ManropeText>
+                &nbsp; zunächst eine Bibliothek aus.
               </ManropeText>
             )}
-            <Formik
-              initialValues={{}}
-              onSubmit={() => {
-                try {
-                  book({
-                    variables: {
-                      identifier: pickedTable.identifier,
-                    },
-                  });
-                } catch (error) {
-                  console.log(error);
-                }
-              }}
-            >
-              {({ handleSubmit }) => (
-                <Button
-                  onPress={async () => {
-                    if (pickedTable.identifier == null) {
-                      setError('Bitte wählen Sie einen Tisch aus.');
-                    } else {
-                      await deviceStorage.set(
-                        'tableIdentifier',
-                        pickedTable.identifier
-                      );
-                    }
-                    handleSubmit();
+          </UpperBody>
+          {getLibrary() && (
+            <>
+              <Library
+                pickedTable={pickedTable}
+                setPickedTable={setPickedTable}
+                library={getLibrary()}
+              />
+              {error && (
+                <ManropeText
+                  style={{
+                    textAlign: 'center',
+                    fontSize: textThree,
+                    color: crimson100,
+                    marginBottom: 5,
                   }}
                 >
-                  <ManropeText bold={true} style={{ color: white }}>
-                    Reservieren
-                  </ManropeText>
-                </Button>
+                  {error}
+                </ManropeText>
               )}
-            </Formik>
-          </>
-        )}
+              <Formik
+                initialValues={{}}
+                onSubmit={() => {
+                  try {
+                    book({
+                      variables: {
+                        identifier: pickedTable.identifier,
+                      },
+                    });
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }}
+              >
+                {({ handleSubmit }) => (
+                  <Button
+                    onPress={async () => {
+                      if (pickedTable.identifier == null) {
+                        setError('Bitte wählen Sie einen Tisch aus.');
+                      }
+                      handleSubmit();
+                    }}
+                  >
+                    <ManropeText bold={true} style={{ color: white }}>
+                      Reservieren
+                    </ManropeText>
+                  </Button>
+                )}
+              </Formik>
+            </>
+          )}
 
-        {!getLibrary() && <ChooseLibIcon2 height={500} width={250} />}
-      </View>
+          {!getLibrary() && <ChooseLibIcon2 height={500} width={250} />}
+        </View>
+      </ScrollView>
     </>
   );
 }

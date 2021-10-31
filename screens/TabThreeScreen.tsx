@@ -1,11 +1,11 @@
 import { useIsFocused } from '@react-navigation/core';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { UpperBody } from '../components/Body/UpperBody';
 import Button from '../components/Button/Button';
 import { Header } from '../components/Header/Header';
 import { ManropeText } from '../components/StyledText';
 import { View } from '../components/Themed';
-import { crimson80, white } from '../constants/Colors';
+import { crimson80, emerald100, emerald80, white } from '../constants/Colors';
 import { getLibrary } from '../utils/valueStore';
 import QRCodeIcon from '../assets/images/QRCodeIcon';
 import { RootTabScreenProps } from '../types';
@@ -14,27 +14,13 @@ import { QRContainer } from '../components/QR/QRContainer';
 import { Formik } from 'formik';
 import { QRScanner } from '../components/QR/QRScanner';
 import { QRSettingsTop } from '../components/QR/QRSettingsTop';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import deviceStorage from '../providers/deviceStorage';
 import { containerStyle, headerTitleStyle } from '../utils/styles';
-
-const getTable = gql`
-  query getTable($identifier: String!) {
-    getTable(identifier: $identifier) {
-      id
-      identifier
-      library {
-        name
-        adress
-        email
-        website
-      }
-      floor
-      userId
-      time
-    }
-  }
-`;
+import { endBooking } from './TabTwoScreen';
+import { subtractMinutes } from '../utils/timer';
+import { getTable } from './TabOneScreen';
+import { refresh } from '../utils/refresh';
 
 export const getCurrentUser = gql`
   query getCurrentUser {
@@ -66,14 +52,19 @@ export const cancelBooking = gql`
   }
 `;
 
-export const endBooking = gql`
-  mutation endBooking {
-    endBooking {
-      id
-      identifier
-      userId
-      booked
-      time
+export const extendBooking = gql`
+  mutation extendTable {
+    extendTable {
+      __typename
+      ... on Error {
+        message
+      }
+      ... on MutationExtendTableSuccess {
+        data {
+          identifier
+          time
+        }
+      }
     }
   }
 `;
@@ -81,6 +72,8 @@ export const endBooking = gql`
 export default function TabThreeScreen({
   navigation,
 }: RootTabScreenProps<'TabThree'>) {
+  const { onRefresh, refreshing } = refresh('TabThree');
+
   const [toggleQR, setToggleQR] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
@@ -93,23 +86,24 @@ export default function TabThreeScreen({
   >(null);
 
   const [cancel] = useMutation(cancelBooking, {
-    async onCompleted(res) {
+    async onCompleted() {
       await deviceStorage.delete('tableIdentifier');
+      navigation.reset({ routes: [{ name: 'Root' }] });
+    },
+  });
+
+  const [extend] = useMutation(extendBooking, {
+    onCompleted() {
       navigation.reset({ routes: [{ name: 'TabThree' }] });
     },
   });
 
-  const [leave] = useMutation(endBooking, {
-    async onCompleted(res) {
-      await deviceStorage.delete('tableIdentifier');
-      navigation.reset({ routes: [{ name: 'TabThree' }] });
-    },
-  });
+  const [leave] = useMutation(endBooking);
 
   async function userHasQR() {
     const identifier = await deviceStorage.get('tableIdentifier');
 
-    if (identifier !== null) {
+    if (identifier) {
       setTableIdentifier(identifier);
       setHasQR(true);
     } else {
@@ -122,10 +116,11 @@ export default function TabThreeScreen({
       getLibrary();
       userHasQR();
     }
-  }, [userHasQR, getLibrary]);
+  }, [userHasQR, isFocused]);
 
   // User & Table Data
   const userData = useQuery(getCurrentUser);
+
   const tableData = useQuery(getTable, {
     variables: {
       identifier: tableIdentifier,
@@ -134,16 +129,19 @@ export default function TabThreeScreen({
 
   if (userData.loading || tableData.loading) {
     return (
-      <View
-        style={[
-          containerStyle.container,
-          { justifyContent: 'center', alignItems: 'center' },
-        ]}
-      >
-        <ManropeText bold={true}>
-          Lädt... Bitte warten Sie einen Moment.
-        </ManropeText>
-      </View>
+      <>
+        <Header />
+        <View
+          style={[
+            containerStyle.container,
+            { justifyContent: 'center', alignItems: 'center' },
+          ]}
+        >
+          <ManropeText bold={true}>
+            Lädt... Bitte warten Sie einen Moment.
+          </ManropeText>
+        </View>
+      </>
     );
   }
 
@@ -156,7 +154,7 @@ export default function TabThreeScreen({
   return (
     <>
       <Header />
-      {toggleQR ? (
+      {toggleQR && userData.data ? (
         <>
           {isAdmin && (
             <View style={{ flex: 1 }}>
@@ -178,96 +176,172 @@ export default function TabThreeScreen({
           )}
         </>
       ) : (
-        <View style={containerStyle.container}>
-          <UpperBody>
-            {hasQR && isAdmin ? (
-              <QRSettingsTop
-                toggleQR={toggleQR}
-                setToggleQR={setToggleQR}
-                setHasPermission={setHasPermission}
-                style={styles.qrTop}
-              />
-            ) : (
-              <>
-                {isAdmin && (
+        <ScrollView
+          style={{ backgroundColor: white }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {!userData.loading && userData.data && (
+            <View style={containerStyle.container}>
+              <UpperBody>
+                {isAdmin ? (
                   <QRSettingsTop
                     toggleQR={toggleQR}
                     setToggleQR={setToggleQR}
                     setHasPermission={setHasPermission}
                     style={styles.qrTop}
                   />
+                ) : null}
+                {hasQR && (
+                  <ManropeText bold={false} style={headerTitleStyle.title}>
+                    Die Platzreservierung war erfolgreich!
+                  </ManropeText>
                 )}
-                <ManropeText bold={false} style={headerTitleStyle.title}>
-                  Reservieren Sie sich zuerst einen Tisch in einer Bibliothek.
-                </ManropeText>
-              </>
-            )}
-          </UpperBody>
-          {hasQR ? (
-            <QRContainer
-              timerCount={timerCount}
-              setTimerCount={setTimerCount}
-              table={tableData.data.getTable}
-              userId={userId}
-              tableId={tableIdentifier}
-            />
-          ) : (
-            <QRCodeIcon height={500} width={300} />
-          )}
-          {hasQR && timerCount !== 'Zeit abgelaufen' && (
-            <>
-              {tableData.data.getTable.userId !== null ? (
-                <Formik
-                  initialValues={{}}
-                  onSubmit={() => {
-                    try {
-                      leave();
-                    } catch (error) {
-                      console.log(error);
-                    }
-                  }}
-                >
-                  {({ handleSubmit }) => (
-                    <Button
-                      onPress={() => handleSubmit()}
-                      backgroundColor={crimson80}
-                    >
-                      <ManropeText bold={true} style={{ color: white }}>
-                        Reservierung Beenden
-                      </ManropeText>
-                    </Button>
-                  )}
-                </Formik>
+                {!hasQR && (
+                  <ManropeText bold={false} style={headerTitleStyle.title}>
+                    Reservieren Sie sich zuerst einen Tisch in einer Bibliothek.
+                  </ManropeText>
+                )}
+              </UpperBody>
+              {hasQR ? (
+                <QRContainer
+                  timerCount={timerCount}
+                  setTimerCount={setTimerCount}
+                  table={tableData.data.getTable}
+                  userId={userId}
+                  tableId={tableIdentifier}
+                />
               ) : (
-                <Formik
-                  initialValues={{}}
-                  onSubmit={() => {
-                    try {
-                      cancel({
-                        variables: {
-                          identifier: tableIdentifier,
-                        },
-                      });
-                    } catch (error) {
-                      console.log(error);
-                    }
-                  }}
-                >
-                  {({ handleSubmit }) => (
-                    <Button
-                      onPress={() => handleSubmit()}
-                      backgroundColor={crimson80}
-                    >
-                      <ManropeText bold={true} style={{ color: white }}>
-                        Reservierung Stornieren
-                      </ManropeText>
-                    </Button>
-                  )}
-                </Formik>
+                <QRCodeIcon height={500} width={300} />
               )}
-            </>
+              {hasQR && timerCount !== 'Zeit abgelaufen' && (
+                <>
+                  {tableData.data.getTable.userId ? (
+                    <>
+                      {new Date().getTime() >=
+                      subtractMinutes(tableData!.data.getTable.time, 10) ? (
+                        <View
+                          style={{
+                            width: '100%',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Formik
+                            initialValues={{}}
+                            onSubmit={() => {
+                              try {
+                                extend();
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            }}
+                          >
+                            {({ handleSubmit }) => (
+                              <Button
+                                width="49.5%"
+                                onPress={() => handleSubmit()}
+                                backgroundColor={emerald80}
+                              >
+                                <ManropeText
+                                  bold={true}
+                                  style={{ color: white }}
+                                >
+                                  Verlängern
+                                </ManropeText>
+                              </Button>
+                            )}
+                          </Formik>
+                          <Formik
+                            initialValues={{}}
+                            onSubmit={async () => {
+                              try {
+                                leave();
+                                await deviceStorage.delete('tableIdentifier');
+                                navigation.reset({
+                                  routes: [{ name: 'Root' }],
+                                });
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            }}
+                          >
+                            {({ handleSubmit }) => (
+                              <Button
+                                width="49.5%"
+                                onPress={() => handleSubmit()}
+                                backgroundColor={crimson80}
+                              >
+                                <ManropeText
+                                  bold={true}
+                                  style={{ color: white }}
+                                >
+                                  Beenden
+                                </ManropeText>
+                              </Button>
+                            )}
+                          </Formik>
+                        </View>
+                      ) : (
+                        <Formik
+                          initialValues={{}}
+                          onSubmit={async () => {
+                            try {
+                              leave();
+                              await deviceStorage.delete('tableIdentifier');
+                              navigation.reset({ routes: [{ name: 'Root' }] });
+                            } catch (error) {
+                              console.log(error);
+                            }
+                          }}
+                        >
+                          {({ handleSubmit }) => (
+                            <Button
+                              onPress={() => handleSubmit()}
+                              backgroundColor={crimson80}
+                            >
+                              <ManropeText bold={true} style={{ color: white }}>
+                                Reservierung Beenden
+                              </ManropeText>
+                            </Button>
+                          )}
+                        </Formik>
+                      )}
+                    </>
+                  ) : (
+                    <Formik
+                      initialValues={{}}
+                      onSubmit={() => {
+                        try {
+                          cancel({
+                            variables: {
+                              identifier: tableIdentifier,
+                            },
+                          });
+                        } catch (error) {
+                          console.log(error);
+                        }
+                      }}
+                    >
+                      {({ handleSubmit }) => (
+                        <Button
+                          onPress={() => handleSubmit()}
+                          backgroundColor={crimson80}
+                        >
+                          <ManropeText bold={true} style={{ color: white }}>
+                            Reservierung Stornieren
+                          </ManropeText>
+                        </Button>
+                      )}
+                    </Formik>
+                  )}
+                </>
+              )}
+            </View>
           )}
-        </View>
+        </ScrollView>
       )}
     </>
   );
