@@ -99,6 +99,9 @@ export const QRScanner = ({
               userId: userId,
               tableIdentifier: tableIdentifier,
             },
+          }).then(() => {
+            setUserId(null);
+            setTableIdentifier(null);
           });
           setScanned(true);
           setPopUp({ scanned: true, success: true });
