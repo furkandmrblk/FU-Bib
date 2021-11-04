@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { gql, useApolloClient, useMutation } from '@apollo/client';
-import { Platform, RefreshControl, StyleSheet } from 'react-native';
+import { RefreshControl, KeyboardAvoidingView } from 'react-native';
 import { UpperBody } from '../components/Body/UpperBody';
 import Button from '../components/Button/Button';
 import { Header } from '../components/Header/Header';
